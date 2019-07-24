@@ -1,0 +1,26 @@
+{
+  "program": {
+    "fileInfos": {},
+    "options": {
+      "incremental": true,
+      "target": 8,
+      "module": 1,
+      "declaration": true,
+      "strict": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "noImplicitReturns": true,
+      "noFallthroughCasesInSwitch": true,
+      "moduleResolution": 2,
+      "esModuleInterop": true,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "outDir": "/Users/michal/htdocs/functional-orm/lib",
+      "configFilePath": "/Users/michal/htdocs/functional-orm/tsconfig.json"
+    },
+    "referencedMap": {},
+    "exportedModulesMap": {},
+    "semanticDiagnosticsPerFile": []
+  },
+  "version": "3.5.3"
+}
