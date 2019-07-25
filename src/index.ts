@@ -29,24 +29,33 @@ type Query<M extends Model> = {
   model: M;
 };
 
+/**
+ * @description information about column such as if it's nullable, foreign key, autoincrement etc.
+ */
+type ColumnMetaData = {
+  type: string;
+  notNull: boolean;
+  // … @todo
+};
+
 type User = Model & {
-  id: Column<'user.id', { a: number }>;
-  age: Column<'user.age', { a: number }>;
+  id: Column<'user.id', ColumnMetaData>;
+  age: Column<'user.age', ColumnMetaData>;
 };
 
 const USER = {
-  age: { a: 1 },
-  id: { a: 1 },
+  age: { type: 'TEXT', notNull: true },
+  id: { type: 'TEXT', notNull: true },
   name: 'user',
 } as User;
 
 type Invoice = Model & {
-  id: Column<'invoice.id', { a: number }>;
-  age: Column<'invoice.age', { a: number }>;
+  id: Column<'invoice.id', ColumnMetaData>;
+  age: Column<'invoice.age', ColumnMetaData>;
 };
 
 const INVOICE = {
-  id: { a: 1 },
+  id: { type: 'TEXT', notNull: true },
   name: 'invoice',
 } as Invoice;
 
