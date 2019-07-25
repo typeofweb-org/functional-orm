@@ -9,7 +9,6 @@
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "tslint": "tslint -p tsconfig.json"
   },
   "keywords": [],
@@ -17,6 +16,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "24.0.15",
+    "@types/ramda": "0.26.18",
     "husky": "3.0.1",
     "jest": "24.8.0",
     "prettier": "1.18.2",
@@ -26,6 +26,9 @@
     "tslint-config-prettier": "1.18.0",
     "tslint-immutable": "6.0.1",
     "typescript": "3.5.3"
+  },
+  "dependencies": {
+    "ramda": "0.26.1"
   },
   "husky": {
     "hooks": {
