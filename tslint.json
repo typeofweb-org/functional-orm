@@ -35,7 +35,8 @@
     "no-object-literal-type-assertion": false,
     "no-var-keyword": true,
     "no-delete": true,
-    "interface-over-type-literal": false
+    "interface-over-type-literal": false,
+    "object-literal-sort-keys": false
   },
   "autoFixOnSave": true,
   "linterOptions": {
