@@ -3,5 +3,6 @@
   "tslint.run": "onSave",
   "tslint.autoFixOnSave": true,
   "prettier.tslintIntegration": true,
-  "prettier.semi": true
+  "prettier.semi": true,
+  "prettier.trailingComma": "all"
 }

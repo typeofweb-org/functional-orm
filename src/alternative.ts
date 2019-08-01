@@ -70,7 +70,7 @@ const INVOICE = {
  *
  */
 
-const from = <M extends Model>(m: M): Query<M, never> => {
+const from = <M extends Model>(m: M): (() => Query<M, never>) => {
   // tslint:disable-next-line:no-any
   return {} as any;
 };
@@ -87,9 +87,9 @@ type GetF<F, M extends Model> = F extends Column<infer R, ColumnMetaData<M>> ? R
 // };
 
 const select = <M extends Model, K1 extends string>(
-  f: Column<K1, ColumnMetaData<M>>
+  f: Column<K1, ColumnMetaData<M>>,
 ): (<K2 extends string, EF extends Column<K2, ColumnMetaData<M>>>(
-  q: Query<M, EF>
+  q: Query<M, EF>,
 ) => Query<M, Column<K1, EF | ColumnMetaData<M>>>) => {
   // tslint:disable-next-line:no-any
   return {} as any;
@@ -99,13 +99,20 @@ const r1 = from(USER);
 
 const r12 = select(USER.columns.id);
 
-const r2 = select(USER.columns.id)(from(USER));
+const r2 = select(USER.columns.id)(from(USER)());
 
-const r2b = select(USER.columns.age)(from(USER));
+const r2b = select(USER.columns.age)(from(USER)());
 
-const r3 = select(USER.columns.age)(select(USER.columns.id)(from(USER)));
+const r3 = select(USER.columns.age)(select(USER.columns.id)(from(USER)()));
 
-const x = pipe(
+const execute1 = pipe(
+  from(USER),
   select(USER.columns.id),
-  select(USER.columns.age)
-)(from(USER));
+  select(USER.columns.age),
+);
+
+const execute2 = pipe(
+  from(INVOICE),
+  select(INVOICE.columns.id),
+  select(INVOICE.columns.age),
+);
