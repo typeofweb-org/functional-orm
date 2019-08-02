@@ -75,7 +75,7 @@ const execute3 = pipe(
   where([USER.columns.id, Op.$eq, 12]),
 );
 
-// $ExpectType () => { id: number; } & { age: string; }
+// $ExpectType () => Promise<{ id: number; } & { age: string; }>
 const execute4 = pipe(
   from(USER),
   select(USER.columns.id),
