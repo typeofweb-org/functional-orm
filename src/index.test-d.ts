@@ -61,6 +61,12 @@ const execute2 = pipe(
   select(INVOICE.columns.age),
 );
 
+// $ExpectType <K2 extends string, ExistingColumns extends Column<K2, ColumnMetaData<Model, any>>>(q: Query<Model, ExistingColumns, never, string>) => Query<Model, Column<string, ExistingColumns>, never, string>
+const w1 = where([USER.columns.id, Op.$eq, 12]);
+
+// $ExpectType <K2 extends string, ExistingColumns extends Column<K2, ColumnMetaData<Model, any>>>(q: Query<Model, ExistingColumns, never, string>) => Query<Model, Column<string, ExistingColumns>, never, string>
+const w2 = where([USER.columns.id, Op.$in, [12]]);
+
 // $ExpectType () => Query<User, Column<string, Column<"user.id", ColumnMetaData<User, any>> | Column<"user.age", ColumnMetaData<User, any>>>, never, string>
 const execute3 = pipe(
   from(USER),

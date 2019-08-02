@@ -62,10 +62,19 @@ export type Query<
 
 const $eq = Symbol('$eq');
 const $neq = Symbol('$neq');
-export type Operators = typeof $eq | typeof $neq;
+const $in = Symbol('$in');
+
+export type Operators = typeof $eq | typeof $neq | typeof $in;
 export const Op = {
   $eq: $eq as typeof $eq,
   $neq: $neq as typeof $neq,
+  $in: $in as typeof $in,
+};
+
+type OperandTypeForOperator<T extends GetJSTypeFromSqlType<ColumnMetaDataType>> = {
+  [$eq]: T;
+  [$neq]: T;
+  [$in]: T[];
 };
 
 /**
@@ -89,57 +98,17 @@ export const select = <M extends Model, K1 extends string>(
   return {} as any;
 };
 
-/**
- *
- */
-
-type User = Model & {
-  columns: {
-    id: Column<'user.id', ColumnMetaData<User, 'TINYINT'>>;
-    age: Column<'user.age', ColumnMetaData<User, 'TEXT'>>;
-  };
-};
-
-const USER = {
-  name: 'user',
-  columns: {
-    age: { type: 'TEXT', notNull: true },
-    id: { type: 'TINYINT', notNull: true },
-  },
-} as User;
-
-type Invoice = Model & {
-  columns: {
-    id: Column<'invoice.id', ColumnMetaData<Invoice, 'TINYINT'>>;
-    age: Column<'invoice.age', ColumnMetaData<Invoice, 'TEXT'>>;
-  };
-};
-
-const INVOICE = {
-  name: 'invoice',
-  columns: {
-    id: { type: 'TINYINT', notNull: true },
-    age: { type: 'TEXT', notNull: true },
-  },
-} as Invoice;
-
 export const where = <
   M extends Model,
   CMD extends ColumnMetaData<M>,
   K1 extends string,
-  C extends Column<K1, CMD>
+  C extends Column<K1, CMD>,
+  O extends Operators
 >(
-  args: [C, Operators, GetJSTypeOfColumn<C>],
+  args: [C, O, OperandTypeForOperator<GetJSTypeOfColumn<C>>[O]],
 ): (<K2 extends string, ExistingColumns extends Column<K2, ColumnMetaData<M>>>(
   q: Query<M, ExistingColumns>,
 ) => Query<M, Column<K1, ExistingColumns>>) => {
   // tslint:disable-next-line:no-any
   return {} as any;
 };
-
-const execute3 = pipe(
-  from(USER),
-  select(USER.columns.id),
-  select(USER.columns.age),
-  where([USER.columns.id, $eq, 12]),
-);
