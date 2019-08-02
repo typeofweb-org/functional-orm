@@ -16,9 +16,11 @@ type ColumnMetaDataType = 'TEXT' | 'DATE' | 'TINYINT';
 /**
  * @description Convert SQL column string literal type to JavaScript type
  */
-type GetJSTypeFromSqlType<T extends ColumnMetaDataType> = T extends 'TEXT'
-  ? string
-  : (T extends 'DATE' ? Date : (T extends 'TINYINT' ? number : never));
+type GetJSTypeFromSqlType<T extends ColumnMetaDataType> = {
+  DATE: Date;
+  TEXT: string;
+  TINYINT: number;
+}[T];
 
 /**
  * @description Infers SQL column string literal type of a column
@@ -71,11 +73,14 @@ export const Op = {
   $in: $in as typeof $in,
 };
 
-type OperandTypeForOperator<T extends GetJSTypeFromSqlType<ColumnMetaDataType>> = {
+type OperandTypeForOperator<
+  O extends Operators,
+  T extends GetJSTypeFromSqlType<ColumnMetaDataType>
+> = {
   [$eq]: T;
   [$neq]: T;
   [$in]: T[];
-};
+}[O];
 
 /**
  *
@@ -105,7 +110,7 @@ export const where = <
   C extends Column<K1, CMD>,
   O extends Operators
 >(
-  args: [C, O, OperandTypeForOperator<GetJSTypeOfColumn<C>>[O]],
+  args: [C, O, OperandTypeForOperator<O, GetJSTypeOfColumn<C>>],
 ): (<K2 extends string, ExistingColumns extends Column<K2, ColumnMetaData<M>>>(
   q: Query<M, ExistingColumns>,
 ) => Query<M, Column<K1, ExistingColumns>>) => {
