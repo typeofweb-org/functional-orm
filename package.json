@@ -35,7 +35,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run dtslint && pretty-quick --staged"
+      "pre-commit": "npm run dtslint && npm test && pretty-quick --staged"
     }
   }
 }
