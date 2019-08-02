@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "types": "index.d.ts",
   "files": [
-    "lib/**/*"
+    "lib/**/*",
+    "index.d.ts"
   ],
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "tslint": "tslint -p tsconfig.json"
+    "dtslint": "dtslint --onlyTestTsNext"
   },
   "keywords": [],
   "author": "Michał Miszczyszyn <michal@mmiszy.pl> (https://typeofweb.com/)",
@@ -28,11 +30,12 @@
     "typescript": "3.5.3"
   },
   "dependencies": {
+    "dtslint": "0.9.0",
     "ramda": "0.26.1"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run tslint && pretty-quick --staged"
+      "pre-commit": "npm run dtslint && pretty-quick --staged"
     }
   }
 }

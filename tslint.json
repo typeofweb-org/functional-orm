@@ -1,6 +1,11 @@
 {
   "defaultSeverity": "error",
-  "extends": ["tslint:recommended", "tslint-config-prettier", "tslint-immutable"],
+  "extends": [
+    "dtslint/dtslint.json",
+    "tslint:recommended",
+    "tslint-config-prettier",
+    "tslint-immutable"
+  ],
   "rules": {
     "variable-name": [
       true,
@@ -25,7 +30,7 @@
       }
     ],
     "return-undefined": true,
-    "no-unnecessary-type-assertion": true,
+    "no-unnecessary-type-assertion": false,
     "no-unnecessary-callback-wrapper": true,
     "no-magic-numbers": true,
     "interface-name": [true, "never-prefix"],
@@ -36,7 +41,8 @@
     "no-var-keyword": true,
     "no-delete": true,
     "interface-over-type-literal": false,
-    "object-literal-sort-keys": false
+    "object-literal-sort-keys": false,
+    "no-unnecessary-generics": false
   },
   "autoFixOnSave": true,
   "linterOptions": {

@@ -1,129 +1,145 @@
+// tslint:disable:no-magic-numbers
+import pipe from 'ramda/es/pipe';
+
+/**
+ * @description Model fields
+ */
 export type Model = {
   name: string;
+};
+
+/**
+ * @description Types of columns which are mappable to JS
+ */
+type ColumnMetaDataType = 'TEXT' | 'DATE' | 'TINYINT';
+
+/**
+ * @description Convert SQL column string literal type to JavaScript type
+ */
+type GetJSTypeFromSqlType<T extends ColumnMetaDataType> = T extends 'TEXT'
+  ? string
+  : (T extends 'DATE' ? Date : (T extends 'TINYINT' ? number : never));
+
+/**
+ * @description Infers SQL column string literal type of a column
+ */
+// tslint:disable-next-line:no-any
+type GetSQLTypeOfColumn<C> = C extends Column<any, ColumnMetaData<any, infer R>> ? R : never;
+
+/**
+ * @description Gets JavaScript type of a column
+ */
+type GetJSTypeOfColumn<C> = GetJSTypeFromSqlType<GetSQLTypeOfColumn<C>>;
+
+/**
+ * @description information about column such as if it's nullable, foreign key, autoincrement etc.
+ */
+// tslint:disable-next-line:no-any
+export type ColumnMetaData<M extends Model, Type extends ColumnMetaDataType = any> = {
+  type: Type;
+  notNull: boolean;
+  // … @todo
 };
 
 /**
  * @description nominal objects which are incompatible even if structurally equivalent
  */
 declare const $brand: unique symbol;
-type Column<K, T extends ColumnMetaData<Model>> = T & { [$brand]: K };
-
-type Diff<T, U> = T extends U ? never : T;
-
-/**
- * @description object with fields which are in M but not in Model
- */
-type RawModelOf<M extends Model> = {
-  [key in Diff<keyof M, keyof Model>]: M[key];
-};
-
-/**
- * @description fields which are in M but not in Model
- */
-type ModelField<M extends Model> = RawModelOf<M>[keyof RawModelOf<M>];
+export type Column<K, T extends ColumnMetaData<Model>> = T & { [$brand]: K };
 
 /**
  * @description internal representation of a query
  */
-type Query<M extends Model, F extends ModelField<M> = never> = {
+export type Query<
+  M extends Model,
+  Columns extends Column<EF, ColumnMetaData<M>> = never,
+  Where = never,
+  EF extends string = string
+> = {
   model: M;
+  columns: Columns[];
+};
+
+const $eq = Symbol('$eq');
+const $neq = Symbol('$neq');
+export type Operators = typeof $eq | typeof $neq;
+export const Op = {
+  $eq: $eq as typeof $eq,
+  $neq: $neq as typeof $neq,
 };
 
 /**
- * @description information about column such as if it's nullable, foreign key, autoincrement etc.
+ *
+ *
+ *
+ *
  */
-type ColumnMetaData<M extends Model> = {
-  type: string;
-  notNull: boolean;
-  // … @todo
-};
 
-type User = Model & {
-  id: Column<'user.id', ColumnMetaData<User>>;
-  age: Column<'user.age', ColumnMetaData<User>>;
-};
-
-const USER = {
-  age: { type: 'TEXT', notNull: true },
-  id: { type: 'TEXT', notNull: true },
-  name: 'user',
-} as User;
-
-type Invoice = Model & {
-  id: Column<'invoice.id', ColumnMetaData<Invoice>>;
-  age: Column<'invoice.age', ColumnMetaData<Invoice>>;
-};
-
-const INVOICE = {
-  id: { type: 'TEXT', notNull: true },
-  name: 'invoice',
-} as Invoice;
-
-const from = <M extends Model>(model: M): Query<M> => ({ model });
-
-const select = <Q extends Query<Model>, T extends ModelField<Q['model']>>(f: T, q: Q) => {
-  return q;
-};
-
-// function where() {}
-
-// function orderBy() {}
-
-// function execute() {}
-
-const x2 = select(USER.age, from(USER));
-
-const from2 = <M extends Model>(model: M): Api<M> => {
-  return {} as Api<M>;
-};
-
-const select2 = function<M extends Model, F extends ModelField<M>, E extends ModelField<M>>(
-  this: Api<M, E>,
-  f: F
-) {
-  return {} as Api<M, F | E>;
-};
-
-type Api<M extends Model, F extends ModelField<M> = never> = {
-  from2: typeof from2;
-  select2: typeof select2;
-};
-
-const x = from2(USER)
-  .select2(USER.id)
-  .select2(USER.age);
-
-// R.pipe(
-//   from(USER),
-//   select(USER.id)
-//   // where(USER.id, { in: [1, 2, 3] }), // in (symbol) ? mongo
-//   // orderBy(Asc(USER.id)),
-//   // execute,
-// );
-
-type Query2<M extends Model, CM extends Column<unknown, ColumnMetaData<M>> = never> = {
-  model: M;
-};
-
-const fromF = <M extends Model>(model: M): Query2<M> => ({ model });
-
-const selectF = <
-  K,
-  CM extends ColumnMetaData<Model>,
-  EC extends Column<unknown, ColumnMetaData<Model>>
->(
-  c: Column<K, CM>
-): CM extends ColumnMetaData<infer M>
-  ? ((m: Query2<M, EC>) => Query2<M, Column<K, CM> | EC>)
-  : never => {
+export const from = <M extends Model>(m: M): (() => Query<M>) => {
   // tslint:disable-next-line:no-any
   return {} as any;
 };
 
-// selectF(USER.age)(selectF(USER.id)(fromF(USER)))
-const fr = fromF(USER);
-const z = selectF(USER.id);
+export const select = <M extends Model, K1 extends string>(
+  f: Column<K1, ColumnMetaData<M>>,
+): (<K2 extends string, ExistingColumns extends Column<K2, ColumnMetaData<M>>>(
+  q: Query<M, ExistingColumns>,
+) => Query<M, ExistingColumns | Column<K1, ColumnMetaData<M>>>) => {
+  // tslint:disable-next-line:no-any
+  return {} as any;
+};
 
-const res = selectF(USER.id)(fromF(USER));
+/**
+ *
+ */
 
-const res2 = selectF(USER.age)(res);
+type User = Model & {
+  columns: {
+    id: Column<'user.id', ColumnMetaData<User, 'TINYINT'>>;
+    age: Column<'user.age', ColumnMetaData<User, 'TEXT'>>;
+  };
+};
+
+const USER = {
+  name: 'user',
+  columns: {
+    age: { type: 'TEXT', notNull: true },
+    id: { type: 'TINYINT', notNull: true },
+  },
+} as User;
+
+type Invoice = Model & {
+  columns: {
+    id: Column<'invoice.id', ColumnMetaData<Invoice, 'TINYINT'>>;
+    age: Column<'invoice.age', ColumnMetaData<Invoice, 'TEXT'>>;
+  };
+};
+
+const INVOICE = {
+  name: 'invoice',
+  columns: {
+    id: { type: 'TINYINT', notNull: true },
+    age: { type: 'TEXT', notNull: true },
+  },
+} as Invoice;
+
+export const where = <
+  M extends Model,
+  CMD extends ColumnMetaData<M>,
+  K1 extends string,
+  C extends Column<K1, CMD>
+>(
+  args: [C, Operators, GetJSTypeOfColumn<C>],
+): (<K2 extends string, ExistingColumns extends Column<K2, ColumnMetaData<M>>>(
+  q: Query<M, ExistingColumns>,
+) => Query<M, Column<K1, ExistingColumns>>) => {
+  // tslint:disable-next-line:no-any
+  return {} as any;
+};
+
+const execute3 = pipe(
+  from(USER),
+  select(USER.columns.id),
+  select(USER.columns.age),
+  where([USER.columns.id, $eq, 12]),
+);
