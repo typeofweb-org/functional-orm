@@ -1,6 +1,6 @@
 # Functional ORM
 
-[![Build Status](https://travis-ci.org/mmiszy/functional-orm.svg?branch=master)](https://travis-ci.org/mmiszy/functional-orm)
+[![Build Status](https://travis-ci.org/mmiszy/functional-orm.svg?branch=master)](https://travis-ci.org/mmiszy/functional-orm) [![Greenkeeper badge](https://badges.greenkeeper.io/mmiszy/functional-orm.svg)](https://greenkeeper.io/)
 
 It's not really an ORM, more like a querybuilder. But the points are:
 
