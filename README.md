@@ -1,6 +1,6 @@
 # Functional ORM
 
-[![Build Status](https://travis-ci.com/mmiszy/functional-orm.svg?token=qfFNC11udygbZ9hTKzhN&branch=master)](https://travis-ci.com/mmiszy/functional-orm)
+[![Build Status](https://travis-ci.org/mmiszy/functional-orm.svg?branch=master)](https://travis-ci.org/mmiszy/functional-orm)
 
 It's not really an ORM, more like a querybuilder. But the points are:
 
