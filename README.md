@@ -23,11 +23,15 @@ What makes this library unique is the fact that you don't have to write any type
 
 Every part of a query is a function which you can compose. Assuming that `USER` and `INVOICE` are automatically generated models:
 
+### Immutable query
+
 Returns a function which returns immutable query representation:
 
 ```ts
 const query1 = select(USER.columns.id)(from(USER)());
 ```
+
+### Typesafety of tables
 
 This is a compile-time TypeScript error even though `USER.id` and `INVOICE.id` are identical
 Thanks to Functional ORM, each column has a unique nominal type which is incompatible with others:
@@ -35,6 +39,8 @@ Thanks to Functional ORM, each column has a unique nominal type which is incompa
 ```ts
 const query2 = select(USER.columns.id)(from(INVOICE)());
 ```
+
+### Typesafety of columns
 
 Returns a function which returns query selecting `age` and `id` from `USER`:
 
@@ -49,6 +55,8 @@ This returns a Promise of `{ id: number, name: string }`
 const result1 = execute(select(USER.columns.name)(select(USER.columns.id)(from(USER)())));
 ```
 
+### Nicer syntax with `pipe`
+
 This syntax quickly gets a bit cumbersome. Thankfully, you can use `pipe` to compose the functions in natural (reversed) order:
 
 ```ts
@@ -59,6 +67,8 @@ const result2 = pipe(
   execute,
 );
 ```
+
+### Typesafe operators
 
 Operators are also typesafe! In this case, Functional ORM knows that types of `USER.id` and `12` have to match:
 
