@@ -37,7 +37,7 @@ This is a compile-time TypeScript error even though `USER.id` and `INVOICE.id` a
 Thanks to Functional ORM, each column has a unique nominal type which is incompatible with others:
 
 ```ts
-const query2 = select(USER.columns.id)(from(INVOICE)());
+const query2 = select(USER.columns.id)(from(INVOICE)()); // Type '"invoice.id"' is not assignable to type '"user.id"'.
 ```
 
 ### Typesafety of columns
