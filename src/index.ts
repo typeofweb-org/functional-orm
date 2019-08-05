@@ -132,18 +132,18 @@ export const where = <
 };
 
 export const execute = <
-  M extends Model,
+  M1 extends Model,
   K1 extends string,
   Name1 extends string,
-  CMD extends ColumnMetaData<M>,
-  ExistingColumns extends Column<K1, Name1, CMD>
+  CMD1 extends ColumnMetaData<M1>,
+  ExistingColumns extends Column<K1, Name1, CMD1>
 >(
-  q: Query<M, ExistingColumns>,
+  q: Query<M1, ExistingColumns>,
 ): Promise<
   UnionToIntersection<
-    ExistingColumns extends Column<any, infer Name, infer CMD2>
+    ExistingColumns extends Column<any, infer Name2, infer CMD2>
       ? (CMD2 extends ColumnMetaData<infer M2>
-          ? (M2['columns'][Name] extends Column<any, infer Name3, ColumnMetaData<M2, infer Type3>>
+          ? (M2['columns'][Name2] extends Column<any, infer Name3, ColumnMetaData<M2, infer Type3>>
               ? { [k in Name3]: GetJSTypeFromSqlType<Type3> }
               : never)
           : never)
