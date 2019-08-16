@@ -1,7 +1,7 @@
 CREATE TABLE "user" (
   "id" SERIAL,
   "email" TEXT NOT NULL,
-  "name" TEXT NOT NULL,
+  "name" TEXT,
   PRIMARY KEY ("id")
 );
 
