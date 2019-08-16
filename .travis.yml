@@ -3,3 +3,10 @@ node_js:
   - '10'
 
 cache: npm
+
+services:
+  - postgresql
+
+before_script:
+  - psql -c "CREATE DATABASE test;" -U postgres
+  - psql -c "CREATE USER test WITH PASSWORD 'test';" -U postgres
