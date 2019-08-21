@@ -1354,10 +1354,10 @@ extsprintf@^1.2.0:
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
   integrity sha1-4mifjzVvrWLMplo6kcXfX5VRaS8=
 
-fast-check@1.16.0:
-  version "1.16.0"
-  resolved "https://registry.yarnpkg.com/fast-check/-/fast-check-1.16.0.tgz#40018950c750047258f0c3faf6a064fd86f76c21"
-  integrity sha512-6ogX4kGFPCNe1p43csINJQrK8wSUq0j6AisK+d2YmUfrta3aHdN+APZHlUanegoZOzdCkLmEW0XOk1/fVRbG2g==
+fast-check@1.16.2:
+  version "1.16.2"
+  resolved "https://registry.yarnpkg.com/fast-check/-/fast-check-1.16.2.tgz#d03caf987b209d138dd4fd2513be652de94e4e05"
+  integrity sha512-sT5p65leD2R+R0C623d1aQFSQhaVve2UkVCJU+MB0VEPZITWrVJ7h+TDPPjiK16tFvrxdc80dWPaMPoadD3Rpw==
   dependencies:
     pure-rand "^1.6.2"
     tslib "^1.9.3"
