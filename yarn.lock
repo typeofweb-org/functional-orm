@@ -914,6 +914,11 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
+command-exists@^1.2.8:
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.8.tgz#715acefdd1223b9c9b37110a149c6392c2852291"
+  integrity sha512-PM54PkseWbiiD/mMsbvW351/u+dafwTJ0ye2qB60G1aGQP9j3xK2gmMDc+R34L3nDtx4qMCitXT75mkbkGJDLw==
+
 commander@^2.12.1, commander@~2.20.0:
   version "2.20.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
@@ -1079,10 +1084,18 @@ define-property@^2.0.2:
     is-descriptor "^1.0.2"
     isobject "^3.0.1"
 
-definitelytyped-header-parser@1.2.0, definitelytyped-header-parser@^1.2.0:
+definitelytyped-header-parser@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/definitelytyped-header-parser/-/definitelytyped-header-parser-1.2.0.tgz#f21374b8a18fabcd3ba4b008a0bcbc9db2b7b4c4"
   integrity sha512-xpg8uu/2YD/reaVsZV4oJ4g7UDYFqQGWvT1W9Tsj6q4VtWBSaig38Qgah0ZMnQGF9kAsAim08EXDO1nSi0+Nog==
+  dependencies:
+    "@types/parsimmon" "^1.3.0"
+    parsimmon "^1.2.0"
+
+definitelytyped-header-parser@^3.7.2:
+  version "3.7.2"
+  resolved "https://registry.yarnpkg.com/definitelytyped-header-parser/-/definitelytyped-header-parser-3.7.2.tgz#a5b2ec9521762910e870477b01ce9feca06d9fb7"
+  integrity sha512-nlkiv+QLlRSc3C3qAbusWPaBiyPLldwRFnrxvoxjdZHvHbIh2+U09qdmzzWV35Rs/I3MMhcoWRcVUi3M1G935Q==
   dependencies:
     "@types/parsimmon" "^1.3.0"
     parsimmon "^1.2.0"
@@ -1134,23 +1147,24 @@ download-file-sync@^1.0.4:
   resolved "https://registry.yarnpkg.com/download-file-sync/-/download-file-sync-1.0.4.tgz#d3e3c543f836f41039455b9034c72e355b036019"
   integrity sha1-0+PFQ/g29BA5RVuQNMcuNVsDYBk=
 
-dts-critic@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/dts-critic/-/dts-critic-2.0.0.tgz#9d52943326d57df0691aa0479010a73ccb855a4f"
-  integrity sha512-oYo69B8NcjUoDhKh8oUl58ljMsgyWnPR0Qf3QKJmKjm5LvkQ21v4SW+QCOleI1Cs0HRN6zEYllvQEORGd45wOQ==
+dts-critic@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/dts-critic/-/dts-critic-2.2.0.tgz#ab76f40dafe9f4a8d2588b7a84a52a342b81aef4"
+  integrity sha512-QFVMR85VMyqI8zfnboyRGNvkf+NOk+i/13V09Z/M8Kh/WivOId8TIO6q0d3NAmGyRJXP5TjQmxadWmwTFn1HBQ==
   dependencies:
+    command-exists "^1.2.8"
     definitelytyped-header-parser "^1.2.0"
     download-file-sync "^1.0.4"
     semver "^6.2.0"
     yargs "^12.0.5"
 
-dtslint@0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/dtslint/-/dtslint-0.9.0.tgz#d6aab256bdd8bbd9c1d28506e89fdf837573dc95"
-  integrity sha512-Y2Qdi5AgqYUeiERrBIQQ0VbBQgzFIna9uDnaamsNfgGFi60EYtoUs0ZOwaUqSOJAVeHwg/YkRbYWFVTAKwBAiw==
+dtslint@0.9.9:
+  version "0.9.9"
+  resolved "https://registry.yarnpkg.com/dtslint/-/dtslint-0.9.9.tgz#27e861da27520758b3ab07e61c5db5b6b05fba95"
+  integrity sha512-rSeyOPBcLRsMR7MXSVTU4SIgPQdBGDLjiivTlxOzPFUYUsOTYWBkJ69pxtZU4M0j6eaCJMC3MnEKfr9fqYASTQ==
   dependencies:
-    definitelytyped-header-parser "1.2.0"
-    dts-critic "^2.0.0"
+    definitelytyped-header-parser "^3.7.2"
+    dts-critic "^2.2.0"
     fs-extra "^6.0.1"
     request "^2.88.0"
     strip-json-comments "^2.0.1"
