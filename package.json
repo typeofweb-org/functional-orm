@@ -18,7 +18,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "24.0.17",
-    "@types/node": "12.7.2",
+    "@types/node": "12.12.8",
     "@types/ramda": "0.26.18",
     "husky": "3.0.3",
     "jest": "24.8.0",
