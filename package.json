@@ -34,7 +34,7 @@
   "dependencies": {
     "dtslint": "2.0.2",
     "fast-check": "1.19.0",
-    "pg-promise": "10.3.1",
+    "pg-promise": "10.4.2",
     "ramda": "0.26.1"
   },
   "husky": {
