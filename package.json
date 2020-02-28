@@ -32,7 +32,7 @@
     "typescript": "3.7.2"
   },
   "dependencies": {
-    "dtslint": "2.0.2",
+    "dtslint": "3.2.0",
     "fast-check": "1.19.0",
     "pg-promise": "10.3.1",
     "ramda": "0.26.1"
