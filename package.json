@@ -17,7 +17,7 @@
   "author": "Michał Miszczyszyn <michal@mmiszy.pl> (https://typeofweb.com/)",
   "license": "ISC",
   "devDependencies": {
-    "@types/jest": "24.0.23",
+    "@types/jest": "25.2.1",
     "@types/node": "12.12.14",
     "@types/ramda": "0.26.36",
     "husky": "3.1.0",
