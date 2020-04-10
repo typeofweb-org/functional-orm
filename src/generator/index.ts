@@ -15,7 +15,7 @@ function getTableNames(): Promise<TableName[]> {
   return db.manyOrNone(sql(Path.join(__dirname, 'select_table_name.sql')));
 }
 
-function getTableSchema(tableName: string): Promise<ColumnSchema[]> {
+function getColumnSchemas(tableName: string): Promise<ColumnSchema[]> {
   return db.manyOrNone(sql(Path.join(__dirname, 'select_table_schema.sql')), [tableName]);
 }
 
@@ -24,14 +24,14 @@ export async function getTablesSchemas(): Promise<Array<TableSchema>> {
 
   const result = await Promise.all(
     tableNames.map(async (i) => {
-      return { tableName: i.table_name, schema: await getTableSchema(i.table_name) };
+      return { tableName: i.table_name, schema: await getColumnSchemas(i.table_name) };
     }),
   );
 
   return result;
 }
 
-export function schemaToObj(schema: TableSchema): Table {
+export function schemaToTableObj(schema: TableSchema): Table {
   return {
     name: schema.tableName,
     columns: Object.fromEntries(
@@ -42,9 +42,9 @@ export function schemaToObj(schema: TableSchema): Table {
   };
 }
 
-export function tableToTSCode(table: Table, opts?: Prettier.Options): string {
+export function tableObjToTSCode(table: Table, opts?: Prettier.Options): string {
   const typeName = table.name.slice(0, 1).toLocaleUpperCase() + table.name.slice(1);
-  const code = `const ${typeName} = ${JSON.stringify(table)} as const;`;
+  const code = `export const ${typeName} = ${JSON.stringify(table)} as const;`;
 
   const defaultOptions: Prettier.Options = {
     semi: true,
@@ -61,8 +61,21 @@ export function tableToTSCode(table: Table, opts?: Prettier.Options): string {
   });
 }
 
-export async function run() {
+export async function generateTSCodeForAllSchema() {
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const schemas = await getTablesSchemas();
+  const allModelsCode = schemas
+    .map(schemaToTableObj)
+    .map((obj) => tableObjToTSCode(obj))
+    .join('\n');
+
+  return `
+/**
+ * AUTOMATICALLY GENERATED
+ * DO NOT MODIFY
+ * ANY CHANGES WILL BE OVERWRITTEN
+ */
+
+${allModelsCode}`.trimStart();
 }
