@@ -1,11 +1,9 @@
-# Functional ORM
+# Gostek
 
-[![Build Status](https://travis-ci.org/mmiszy/functional-orm.svg?branch=master)](https://travis-ci.org/mmiszy/functional-orm) [![Greenkeeper badge](https://flat.badgen.net/dependabot/mmiszy/functional-orm?icon=dependabot)](https://dependabot.com/)
+![CI](https://github.com/typeofweb/functional-orm/workflows/CI/badge.svg?branch=master)
+[![Greenkeeper badge](https://flat.badgen.net/dependabot/typeofweb/functional-orm?icon=dependabot)](https://dependabot.com/)
 
-It's not really an ORM, more like a querybuilder. But the points are:
-
-- it's **completely typesafe** thanks to TypeScript
-- it's build in a **functional** fashion
+Gostek is a **completely typesafe querybuilder** written in TypeScript
 
 Fancy, huh?
 
@@ -21,75 +19,88 @@ What makes this library unique is the fact that you don't have to write any type
 
 ## Examples (draft syntax)
 
-Every part of a query is a function which you can compose. Assuming that `USER` and `INVOICE` are automatically generated models:
+Gostek generates types and models based on your DB schema, for example:
+
+```ts
+const User = {
+  name: 'user',
+  columns: {
+    id: { type: 'int4', notNull: true },
+    name: { type: 'text', notNull: false },
+  },
+} as const;
+```
 
 ### Immutable query
 
-Returns a function which returns immutable query representation:
+Each function returns an immutable query representation:
 
 ```ts
-const query1 = select(USER.columns.id)(from(USER)());
+const query1 = db.from(User).select(['id']);
 ```
 
-### Typesafety of tables
-
-This is a compile-time TypeScript error even though `USER.id` and `INVOICE.id` are identical
-Thanks to Functional ORM, each column has a unique nominal type which is incompatible with others:
+The following query selects `age` and `id` from `User`:
 
 ```ts
-const query2 = select(USER.columns.id)(from(INVOICE)()); // Type '"invoice.id"' is not assignable to type '"user.id"'.
+const query2 = db.from(User).select(['id', 'age']);
 ```
 
-### Typesafety of columns
-
-Returns a function which returns query selecting `age` and `id` from `USER`:
+It would be a compile-time error to try to select columns which don't exist:
 
 ```ts
-const query3 = select(USER.columns.name)(select(USER.columns.id)(from(USER)()));
+const query3 = db.from(User).select(['id', 'foo']);
+// Argument of type '"foo"' is not assignable to parameter of type '"*" | ("age" | "id")[]'.
 ```
 
-Keep in mind that all queries are typesafe.
-This returns a Promise of `{ id: number, name: string }`
+All queries are typesafe! Executing it returns only fields which are selected:
 
 ```ts
-const result1 = execute(select(USER.columns.name)(select(USER.columns.id)(from(USER)())));
+const result1 = await db.from(User).select(['id', 'name']).execute();
+// {
+//   readonly id: number;
+//   readonly name: string | null;
+// }[]
 ```
 
-### Nicer syntax with `pipe`
+Mind that nullability of `name` was taken into account as well.
 
-This syntax quickly gets a bit cumbersome. Thankfully, you can use `pipe` to compose the functions in natural (reversed) order:
+There's a shorthand notation for selecting all properties and it's also typesafe:
 
 ```ts
-const result2 = pipe(
-  from(USER),
-  select(USER.columns.id),
-  select(USER.columns.name),
-  execute,
-);
+const result2 = await db.from(User).select('*').execute();
+// {
+//   readonly id: number;
+//   readonly name: string | null;
+// }[]
 ```
 
 ### Typesafe operators
 
-Operators are also typesafe! In this case, Functional ORM knows that types of `USER.id` and `12` have to match:
+Operators are also typesafe! In this case, Gostek knows that types of `User.name` and `name` have to match:
 
 ```ts
-const result2 = pipe(
-  from(USER),
-  select(USER.columns.id),
-  select(USER.columns.name),
-  where([USER.columns.id, $eq, 12]),
-  execute,
-);
+db.from(User).select(['name']).where(['name', Op.$eq, 'Kasia']);
+```
+
+The library is also aware of the operator you're using:
+
+```ts
+db.from(User)
+  .select(['name'])
+  .where(['id', Op.$in, [1, 2, 3]]);
+// $in requires an array!
 ```
 
 This would be a compile-time TypeScript error:
 
 ```ts
-where([USER.columns.name, $eq, 12]); // Type 'number' is not assignable to type 'string'.
+db.from(User).select(['name']).where(['name', Op.$eq, 123]);
+// Type 'number' is not assignable to type 'string | null'.
 ```
 
 This is also an error because `$in` requires the argument to be an array of values:
 
 ```ts
-where([USER.columns.name, $in, 12]); // Type 'number' is not assignable to type 'number[]'.
+db.from(User).select(['name']).where(['name', Op.$in, 'Michał']);
+// Type 'string' is not assignable to type '(string | null)[]'.
 ```

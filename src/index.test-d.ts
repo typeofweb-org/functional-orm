@@ -4,18 +4,10 @@ import { db, Op } from './index';
 const User = {
   name: 'user',
   columns: {
-    age: { type: 'text', notNull: false },
     id: { type: 'int4', notNull: true },
+    name: { type: 'text', notNull: false },
   },
 } as const;
-
-// const Invoice = {
-//   name: 'invoice',
-//   columns: {
-//     id: { type: 'TINYINT', notNull: true },
-//     age: { type: 'TEXT', notNull: true },
-//   },
-// } as const;
 
 async () => {
   // $ExpectError
@@ -32,13 +24,13 @@ async () => {
     // $ExpectError
     .where(['id', Op.$in, ['a', 'b', 'c']]);
 
-  // $ExpectType { readonly age: string | null; }[]
+  // $ExpectType { readonly name: string | null; }[]
   await db
     .from(User)
-    .select(['age'])
+    .select(['name'])
     .where(['id', Op.$in, [1, 2, 3]])
     .execute();
 
-  // $ExpectType { readonly age: string | null; readonly id: number; }[]
+  // $ExpectType { readonly name: string | null; readonly id: number; }[]
   await db.from(User).select('*').execute();
 };
