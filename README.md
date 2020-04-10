@@ -55,10 +55,9 @@ const query3 = db.from(User).select(['id', 'foo']);
 All queries are typesafe! Executing it returns only fields which are selected:
 
 ```ts
-const result1 = await db.from(User).select(['id', 'name']).execute();
+const result1 = await db.from(User).select(['id']).execute();
 // {
 //   readonly id: number;
-//   readonly name: string | null;
 // }[]
 ```
 
@@ -104,3 +103,9 @@ This is also an error because `$in` requires the argument to be an array of valu
 db.from(User).select(['name']).where(['name', Op.$in, 'Michał']);
 // Type 'string' is not assignable to type '(string | null)[]'.
 ```
+
+## 1.0 plan
+
+- [ ] finish generator which outputs safely-typed models for simple tables
+- [ ] support PostgreSQL
+- [ ] make sure all queries from the README work on a real database
