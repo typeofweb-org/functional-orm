@@ -31,6 +31,6 @@ async () => {
     .where(['id', Op.$in, [1, 2, 3]])
     .execute();
 
-  // $ExpectType { readonly name: string | null; readonly id: number; }[]
+  // $ExpectType { readonly id: number; readonly name: string | null; }[]
   await db.from(User).select('*').execute();
 };

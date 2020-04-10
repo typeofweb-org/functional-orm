@@ -27,10 +27,47 @@ type Pretty<T> = { [K in keyof T]: T[K] };
  * @description Convert SQL column string literal type to JavaScript type
  */
 type SupportedTypes = {
+  bit: 'Not supported yet!';
+  bool: boolean;
+  box: 'Not supported yet!';
+  bytea: 'Not supported yet!';
+  char: string;
+  cidr: 'Not supported yet!';
+  circle: 'Not supported yet!';
   date: Date;
-  text: string;
+  float4: number;
+  float8: number;
+  inet: 'Not supported yet!';
+  int2: number;
   int4: number;
+  int8: number;
+  interval: 'Not supported yet!';
+  json: 'Not supported yet!';
+  jsonb: 'Not supported yet!';
+  line: 'Not supported yet!';
+  lseg: 'Not supported yet!';
+  macaddr: 'Not supported yet!';
+  macaddr8: 'Not supported yet!';
+  money: 'Not supported yet!';
+  numeric: number;
+  path: 'Not supported yet!';
+  pg_lsn: 'Not supported yet!';
+  point: 'Not supported yet!';
+  polygon: 'Not supported yet!';
+  text: string;
+  time: 'Not supported yet!';
+  timestamp: number;
+  timestamptz: number;
+  timetz: 'Not supported yet!';
+  tsquery: 'Not supported yet!';
+  tsvector: 'Not supported yet!';
+  txid_snapshot: 'Not supported yet!';
+  uuid: 'Not supported yet!';
+  varbit: 'Not supported yet!';
+  varchar: string;
+  xml: 'Not supported yet!';
 };
+
 type GetJSTypeFromSqlType<
   T extends ColumnType,
   Nullable extends boolean
