@@ -23,6 +23,7 @@
     "@typescript-eslint/eslint-plugin": "2.27.0",
     "@typescript-eslint/parser": "2.27.0",
     "eslint": "6.8.0",
+    "eslint-config-prettier": "6.10.1",
     "eslint-config-typestrict": "1.0.0",
     "eslint-plugin-expect-type": "0.0.4",
     "eslint-plugin-sonarjs": "0.5.0",
@@ -36,7 +37,6 @@
     "typescript": "3.8.3"
   },
   "dependencies": {
-    "eslint-config-prettier": "6.10.1",
     "pg-promise": "10.5.0"
   },
   "husky": {
