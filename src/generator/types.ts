@@ -51,3 +51,8 @@ export type ColumnSchema = {
   udt_name: ColumnType;
   is_nullable: 'YES' | 'NO';
 };
+
+export type TableSchema = {
+  tableName: TableName['table_name'];
+  schema: ColumnSchema[];
+};

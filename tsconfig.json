@@ -12,7 +12,9 @@
     "emitDecoratorMetadata": true,
     "outDir": "./lib",
     "lib": ["esnext"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
   "include": ["src"]
 }

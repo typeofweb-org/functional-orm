@@ -4,8 +4,8 @@ import { db, Op } from './index';
 const User = {
   name: 'user',
   columns: {
-    age: { type: 'TEXT', notNull: false },
-    id: { type: 'TINYINT', notNull: true },
+    age: { type: 'text', notNull: false },
+    id: { type: 'int4', notNull: true },
   },
 } as const;
 

@@ -1,8 +1,8 @@
 version: '2'
 
 services:
-  devfaq_db:
-    image: postgres:11-alpine
+  typeofweb:
+    image: postgres:12-alpine
     ports:
       - '5432:5432'
     environment:

@@ -1,3 +1,4 @@
+import { ColumnType } from './generator/types';
 const $eq = Symbol('$eq');
 const $neq = Symbol('$neq');
 const $in = Symbol('$in');
@@ -15,28 +16,27 @@ type OperandTypeForOperator<O extends Operators, T> = {
   [$in]: T[];
 }[O];
 
-type Table = {
+export type Table = {
   name: string;
   columns: Record<string, ColumnMetaData<Table>>;
 };
-
-/**
- * @description Types of columns which are mappable to JS
- */
-type ColumnMetaDataType = 'TEXT' | 'DATE' | 'TINYINT';
 
 type Pretty<T> = { [K in keyof T]: T[K] };
 
 /**
  * @description Convert SQL column string literal type to JavaScript type
  */
-type GetJSTypeFromSqlType<T extends ColumnMetaDataType, Nullable extends boolean> =
-  | {
-      DATE: Date;
-      TEXT: string;
-      TINYINT: number;
-    }[T]
-  | (Nullable extends false ? null : never);
+type SupportedTypes = {
+  date: Date;
+  text: string;
+  int4: number;
+};
+type GetJSTypeFromSqlType<
+  T extends ColumnType,
+  Nullable extends boolean
+> = T extends keyof SupportedTypes
+  ? SupportedTypes[T] | (Nullable extends false ? null : never)
+  : never;
 
 type GetColumnJSType<
   SelectedTable extends Table,
@@ -51,7 +51,7 @@ type GetColumnJSType<
 /**
  * @description information about column such as if it's nullable, foreign key, autoincrement etc.
  */
-type ColumnMetaData<_M extends Table, Type extends ColumnMetaDataType = ColumnMetaDataType> = {
+type ColumnMetaData<_M extends Table, Type extends ColumnType = ColumnType> = {
   type: Type;
   notNull: boolean;
   // … @todo

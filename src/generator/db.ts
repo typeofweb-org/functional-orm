@@ -1,4 +1,3 @@
-import Path from 'path';
 import PgPromise, { QueryFile } from 'pg-promise';
 
 export const pgp = PgPromise();
@@ -11,8 +10,7 @@ export const db = pgp({
 
 const sqlCache = new Map<string, QueryFile>();
 
-export function sql(file: string) {
-  const fullPath = Path.join(__dirname, file);
+export function sql(fullPath: string) {
   if (sqlCache.has(fullPath)) {
     return sqlCache.get(fullPath) as QueryFile;
   }
