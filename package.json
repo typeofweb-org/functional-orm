@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "types": "index.d.ts",
+  "types": "lib/index.d.ts",
   "files": [
-    "lib/**/*",
-    "index.d.ts"
+    "lib/**/*"
   ],
+  "bin": {
+    "gostek-generate": "./lib/cli.js"
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod +x ./lib/cli.js",
     "test": "jest",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx"
   },
@@ -37,6 +39,7 @@
   },
   "dependencies": {
     "@types/lodash": "4.14.149",
+    "app-root-path": "3.0.0",
     "lodash": "4.17.15",
     "pg-promise": "10.5.0",
     "prettier": "2.0.4"
