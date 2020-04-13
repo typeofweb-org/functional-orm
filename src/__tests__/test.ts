@@ -5,6 +5,7 @@ import {
   schemaToTableObj,
   tableObjToTSCode,
   generateTSCodeForAllSchema as generateTSCodeForAllSchemas,
+  getPostgresVersion,
 } from '../generator';
 import Path from 'path';
 import { compileTypeScriptCode } from './tsCompiler';
@@ -120,6 +121,10 @@ describe('integration tests', () => {
   beforeEach(create);
   afterEach(drop);
   afterAll(() => pgp.end());
+
+  it('reads postgres version', async () => {
+    expect(await getPostgresVersion()).toBeGreaterThanOrEqual(120000);
+  });
 
   it('correctly reads schema for table user', async () => {
     const result = await getTablesSchemas();
