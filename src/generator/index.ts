@@ -13,7 +13,6 @@ class NotSupportedError extends Error {
 }
 
 // Ref: https://github.com/graphile/postgraphile/tree/master/src/postgres/introspection/object
-
 type PgNamespace = {
   kind: 'namespace';
   id: string;
@@ -332,7 +331,6 @@ export function schemaToTableObj(schema: TableSchema): Table {
 export function tableObjToTSCode(table: Table, opts?: Prettier.Options): string {
   const typeName = table.name.slice(0, 1).toLocaleUpperCase() + table.name.slice(1);
   const code = `export const ${typeName} = ${JSON.stringify(table)} as const;`;
-
   const defaultOptions: Prettier.Options = {
     semi: true,
     singleQuote: true,
@@ -348,7 +346,7 @@ export function tableObjToTSCode(table: Table, opts?: Prettier.Options): string 
   });
 }
 
-export async function generateTSCodeForAllSchema() {
+export async function generateTSCodeForAllSchemas() {
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const schemas = await getTablesSchemas();

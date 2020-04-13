@@ -4,7 +4,7 @@ import {
   getTablesSchemas,
   schemaToTableObj,
   tableObjToTSCode,
-  generateTSCodeForAllSchema as generateTSCodeForAllSchemas,
+  generateTSCodeForAllSchemas,
   getPostgresVersion,
 } from '../generator';
 import Path from 'path';
