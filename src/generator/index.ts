@@ -1,10 +1,10 @@
-import { db } from './db';
 import { TableSchema, ColumnType } from './types';
 import { Table } from '..';
 import Prettier from 'prettier';
 import { defaults, flatMap } from 'lodash';
 import { makeIntrospectionQuery } from './introspectionQuery';
 import { xByY, xByYAndZ, parseTags } from './utils';
+import { IDatabase } from 'pg-promise';
 
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -215,13 +215,44 @@ type PgIntrospectionResultsByKind = PgIntrospectionOriginalResultsByKind & {
   typeById: { [typeId: string]: PgType };
 };
 
-export async function getPostgresVersion(): Promise<number> {
+export function schemaToTableObj(schema: TableSchema): Table {
+  return {
+    name: schema.tableName,
+    columns: Object.fromEntries(
+      schema.schema.map((s) => {
+        return [s.column_name, { type: s.udt_name, notNull: s.is_nullable === 'NO' }];
+      }),
+    ),
+  };
+}
+
+export function tableObjToTSCode(table: Table, opts?: Prettier.Options): string {
+  const typeName = table.name.slice(0, 1).toLocaleUpperCase() + table.name.slice(1);
+  const code = `export const ${typeName} = ${JSON.stringify(table)} as const;`;
+  const defaultOptions: Prettier.Options = {
+    semi: true,
+    singleQuote: true,
+    trailingComma: 'all',
+    printWidth: 100,
+    tabWidth: 2,
+    useTabs: false,
+  } as const;
+  const options = defaults({}, opts, defaultOptions);
+  return Prettier.format(code, {
+    ...options,
+    parser: 'typescript',
+  });
+}
+
+export async function getPostgresVersion(db: IDatabase<any>): Promise<number> {
   const versionResult = await db.one('show server_version_num;');
   return Number.parseInt(versionResult.server_version_num, 10);
 }
 
-export async function runIntrospectionQuery(): Promise<PgIntrospectionResultsByKind> {
-  const version = await getPostgresVersion();
+export async function runIntrospectionQuery(
+  db: IDatabase<any>,
+): Promise<PgIntrospectionResultsByKind> {
+  const version = await getPostgresVersion(db);
   const sql = makeIntrospectionQuery(version);
   const kinds = [
     'namespace',
@@ -293,15 +324,15 @@ export async function runIntrospectionQuery(): Promise<PgIntrospectionResultsByK
   return Object.freeze(result);
 }
 
-export async function introspectSchemas() {
-  const intro = await runIntrospectionQuery();
+export async function introspectSchemas(db: IDatabase<any>) {
+  const intro = await runIntrospectionQuery(db);
   const namespaceIds = intro.namespace.map((n) => n.id);
   const classes = intro.class.filter((c) => namespaceIds.includes(c.namespaceId));
   return { classes, intro };
 }
 
-export async function getTablesSchemas(): Promise<Array<TableSchema>> {
-  const { classes, intro } = await introspectSchemas();
+export async function getTablesSchemas(db: IDatabase<any>): Promise<Array<TableSchema>> {
+  const { classes, intro } = await introspectSchemas(db);
 
   return classes.map((klass) => {
     return {
@@ -317,39 +348,10 @@ export async function getTablesSchemas(): Promise<Array<TableSchema>> {
   });
 }
 
-export function schemaToTableObj(schema: TableSchema): Table {
-  return {
-    name: schema.tableName,
-    columns: Object.fromEntries(
-      schema.schema.map((s) => {
-        return [s.column_name, { type: s.udt_name, notNull: s.is_nullable === 'NO' }];
-      }),
-    ),
-  };
-}
-
-export function tableObjToTSCode(table: Table, opts?: Prettier.Options): string {
-  const typeName = table.name.slice(0, 1).toLocaleUpperCase() + table.name.slice(1);
-  const code = `export const ${typeName} = ${JSON.stringify(table)} as const;`;
-  const defaultOptions: Prettier.Options = {
-    semi: true,
-    singleQuote: true,
-    trailingComma: 'all',
-    printWidth: 100,
-    tabWidth: 2,
-    useTabs: false,
-  } as const;
-  const options = defaults({}, opts, defaultOptions);
-  return Prettier.format(code, {
-    ...options,
-    parser: 'typescript',
-  });
-}
-
-export async function generateTSCodeForAllSchemas() {
+export async function generateTSCodeForAllSchemas(db: IDatabase<any>) {
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const schemas = await getTablesSchemas();
+  const schemas = await getTablesSchemas(db);
   const allModelsCode = schemas
     .map(schemaToTableObj)
     .map((obj) => tableObjToTSCode(obj))

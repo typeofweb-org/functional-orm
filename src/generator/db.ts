@@ -2,11 +2,21 @@ import PgPromise, { QueryFile } from 'pg-promise';
 
 export const pgp = PgPromise();
 
-export const db = pgp({
-  user: 'test',
-  database: 'test',
-  password: 'test',
-});
+type ConnectionOptions =
+  | {
+      connectionString: string;
+    }
+  | {
+      host?: string;
+      database: string;
+      user: string;
+      password: string;
+      port?: number;
+    };
+
+export const getDbConnection = (options: ConnectionOptions) => {
+  return pgp(options);
+};
 
 const sqlCache = new Map<string, QueryFile>();
 

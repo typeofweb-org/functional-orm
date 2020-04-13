@@ -1,5 +1,5 @@
 import 'jest-extended';
-import { db, sql, pgp } from '../generator/db';
+import { sql, pgp, getDbConnection } from '../generator/db';
 import {
   getTablesSchemas,
   schemaToTableObj,
@@ -107,6 +107,12 @@ export const User = {
 });
 
 describe('integration tests', () => {
+  const db = getDbConnection({
+    user: 'test',
+    database: 'test',
+    password: 'test',
+  });
+
   const drop = async () => {
     await db.none(sql(Path.join(__dirname, 'drop_user.sql')));
     await db.none(sql(Path.join(__dirname, 'drop_invoice.sql')));
@@ -114,8 +120,6 @@ describe('integration tests', () => {
   const create = async () => {
     await db.none(sql(Path.join(__dirname, 'create_user.sql')));
     await db.none(sql(Path.join(__dirname, 'create_invoice.sql')));
-    // const x = await db.one('SELECT * FROM "user";');
-    // console.log(x, typeof x.editTime);
   };
   beforeAll(drop);
   beforeEach(create);
@@ -123,11 +127,11 @@ describe('integration tests', () => {
   afterAll(() => pgp.end());
 
   it('reads postgres version', async () => {
-    expect(await getPostgresVersion()).toBeGreaterThanOrEqual(120000);
+    expect(await getPostgresVersion(db)).toBeGreaterThanOrEqual(120000);
   });
 
   it('correctly reads schema for table user', async () => {
-    const result = await getTablesSchemas();
+    const result = await getTablesSchemas(db);
 
     const userSchema = result.find((i) => i.tableName === 'user');
     expect(userSchema).toBeDefined();
@@ -153,7 +157,7 @@ describe('integration tests', () => {
   });
 
   it('generates valid TS code for all schemas', async () => {
-    const code = await generateTSCodeForAllSchemas();
+    const code = await generateTSCodeForAllSchemas(db);
 
     expect(code).toEqual(
       `
