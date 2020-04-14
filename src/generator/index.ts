@@ -1,5 +1,5 @@
 import { TableSchema, ColumnType } from './types';
-import { Table } from '..';
+import { Table } from '../querybuilder/querybuilder';
 import Prettier from 'prettier';
 import { defaults, flatMap } from 'lodash';
 import { makeIntrospectionQuery } from './introspectionQuery';
@@ -220,14 +220,21 @@ export function schemaToTableObj(schema: TableSchema): Table {
     name: schema.tableName,
     columns: Object.fromEntries(
       schema.schema.map((s) => {
-        return [s.column_name, { type: s.udt_name, notNull: s.is_nullable === 'NO' }];
+        return [
+          s.column_name,
+          { type: s.udt_name, notNull: s.is_nullable === 'NO' },
+        ];
       }),
     ),
   };
 }
 
-export function tableObjToTSCode(table: Table, opts?: Prettier.Options): string {
-  const typeName = table.name.slice(0, 1).toLocaleUpperCase() + table.name.slice(1);
+export function tableObjToTSCode(
+  table: Table,
+  opts?: Prettier.Options,
+): string {
+  const typeName =
+    table.name.slice(0, 1).toLocaleUpperCase() + table.name.slice(1);
   const code = `export const ${typeName} = ${JSON.stringify(table)} as const;`;
   const defaultOptions: Prettier.Options = {
     semi: true,
@@ -288,18 +295,20 @@ export async function runIntrospectionQuery(
 
   // Parse tags from comments
   kinds.forEach((kind) => {
-    originalResultsByType[kind].forEach((object: PgIntrospectionResultsByKind[Kinds][number]) => {
-      // Keep a copy of the raw comment
-      object.comment = object.description;
-      // https://www.graphile.org/postgraphile/smart-comments/
-      if (object.description) {
-        const parsed = parseTags(object.description);
-        object.tags = parsed.tags;
-        object.description = parsed.text;
-      } else {
-        object.tags = {};
-      }
-    });
+    originalResultsByType[kind].forEach(
+      (object: PgIntrospectionResultsByKind[Kinds][number]) => {
+        // Keep a copy of the raw comment
+        object.comment = object.description;
+        // https://www.graphile.org/postgraphile/smart-comments/
+        if (object.description) {
+          const parsed = parseTags(object.description);
+          object.tags = parsed.tags;
+          object.description = parsed.text;
+        } else {
+          object.tags = {};
+        }
+      },
+    );
   });
 
   const extensionConfigurationClassIds = flatMap(
@@ -307,7 +316,9 @@ export async function runIntrospectionQuery(
     (e) => e.configurationClassIds,
   );
   originalResultsByType.class.forEach((pgClass) => {
-    pgClass.isExtensionConfigurationTable = extensionConfigurationClassIds.includes(pgClass.id);
+    pgClass.isExtensionConfigurationTable = extensionConfigurationClassIds.includes(
+      pgClass.id,
+    );
   });
 
   kinds.forEach((k) => {
@@ -318,7 +329,11 @@ export async function runIntrospectionQuery(
   result.namespaceById = xByY(originalResultsByType.namespace, 'id');
   result.classById = xByY(originalResultsByType.class, 'id');
   result.typeById = xByY(originalResultsByType.type, 'id');
-  result.attributeByClassIdAndNum = xByYAndZ(originalResultsByType.attribute, 'classId', 'num');
+  result.attributeByClassIdAndNum = xByYAndZ(
+    originalResultsByType.attribute,
+    'classId',
+    'num',
+  );
   result.extensionById = xByY(originalResultsByType.extension, 'id');
 
   return Object.freeze(result);
@@ -327,30 +342,34 @@ export async function runIntrospectionQuery(
 export async function introspectSchemas(db: IDatabase<any>) {
   const intro = await runIntrospectionQuery(db);
   const namespaceIds = intro.namespace.map((n) => n.id);
-  const classes = intro.class.filter((c) => namespaceIds.includes(c.namespaceId));
+  const classes = intro.class.filter((c) =>
+    namespaceIds.includes(c.namespaceId),
+  );
   return { classes, intro };
 }
 
-export async function getTablesSchemas(db: IDatabase<any>): Promise<Array<TableSchema>> {
+export async function getTablesSchemas(
+  db: IDatabase<any>,
+): Promise<Array<TableSchema>> {
   const { classes, intro } = await introspectSchemas(db);
 
   return classes.map((klass) => {
     return {
       tableName: klass.name,
-      schema: Object.values(intro.attributeByClassIdAndNum[klass.id]).map((attribute) => {
-        return {
-          column_name: attribute.name,
-          udt_name: intro.typeById[attribute.typeId].name,
-          is_nullable: attribute.isNotNull ? 'NO' : 'YES',
-        };
-      }),
+      schema: Object.values(intro.attributeByClassIdAndNum[klass.id]).map(
+        (attribute) => {
+          return {
+            column_name: attribute.name,
+            udt_name: intro.typeById[attribute.typeId].name,
+            is_nullable: attribute.isNotNull ? 'NO' : 'YES',
+          };
+        },
+      ),
     };
   });
 }
 
 export async function generateTSCodeForAllSchemas(db: IDatabase<any>) {
-  // @ts-ignore
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const schemas = await getTablesSchemas(db);
   const allModelsCode = schemas
     .map(schemaToTableObj)

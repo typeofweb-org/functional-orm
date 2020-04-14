@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import Path from 'path';
 import Fs from 'fs';
-import { getDbConnection, pgp } from './generator/db';
+import { getDbConnection, pgp } from './db';
 import { generateTSCodeForAllSchemas } from './generator';
 
 const pkgPath = Path.resolve(process.cwd(), 'package.json');
@@ -11,6 +11,7 @@ if (!Fs.existsSync(pkgPath)) {
   );
 }
 
+// @todo config
 const connectionOptions = {
   user: 'test',
   database: 'test',
