@@ -4,7 +4,7 @@ CREATE TABLE "user" (
   "name" TEXT,
   "boolColumn" bool NOT NULL,
   "charColumn" bpchar NULL,
-  "dateColumn" date NOT NULL,
+  "dateColumn" date NULL,
   "float4Column" float4 NULL,
   "float8Column" float8 NOT NULL,
   "int2Column" int2 NULL,
