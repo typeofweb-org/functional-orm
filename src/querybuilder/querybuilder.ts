@@ -46,7 +46,7 @@ type SupportedTypes = {
   int8: number;
   interval: 'Not supported yet!';
   json: 'Not supported yet!';
-  jsonb: 'Not supported yet!';
+  jsonb: object;
   line: 'Not supported yet!';
   lseg: 'Not supported yet!';
   macaddr: 'Not supported yet!';

@@ -11,6 +11,7 @@ CREATE TABLE "user" (
   "int4Column" int4 NOT NULL,
   "int8Column" int8 NULL,
   "numericColumn" numeric NOT NULL,
+  "jsonbColumn" jsonb NOT NULL,
   "textColumn" text NULL,
   "timestampColumn" timestamp NOT NULL,
   "timestamptzColumn" timestamptz NULL,
