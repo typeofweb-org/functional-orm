@@ -262,7 +262,12 @@ export const User = {
     it('can insert a full new entity to database', async () => {
       const nowWithoutTimezone = new Date('2020-04-13T22:00:00.000Z');
       nowWithoutTimezone.setMinutes(nowWithoutTimezone.getTimezoneOffset());
-      const nowUtcWithDatePrecision = new Date('2020-04-12T22:00:00.000Z');
+      const nowWithoutTimezoneDatePrecision = new Date(
+        '2020-04-13T00:00:00.000Z',
+      );
+      nowWithoutTimezoneDatePrecision.setMinutes(
+        nowWithoutTimezoneDatePrecision.getTimezoneOffset(),
+      );
 
       const userObject = {
         id: 1,
@@ -287,7 +292,7 @@ export const User = {
 
       expect((await Gostek.from(User).select('*').execute(db))[0]).toEqual({
         ...userObject,
-        dateColumn: nowUtcWithDatePrecision,
+        dateColumn: nowWithoutTimezoneDatePrecision,
         int8Column: '1',
         numericColumn: '50.5',
       });
@@ -296,7 +301,12 @@ export const User = {
     it('can insert new entity of only required fields to database', async () => {
       const nowWithoutTimezone = new Date('2020-04-13T22:00:00.000Z');
       nowWithoutTimezone.setMinutes(nowWithoutTimezone.getTimezoneOffset());
-      const nowUtcWithDatePrecision = new Date('2020-04-12T22:00:00.000Z');
+      const nowWithoutTimezoneDatePrecision = new Date(
+        '2020-04-13T00:00:00.000Z',
+      );
+      nowWithoutTimezoneDatePrecision.setMinutes(
+        nowWithoutTimezoneDatePrecision.getTimezoneOffset(),
+      );
 
       const userObject = {
         id: 1,
@@ -323,7 +333,7 @@ export const User = {
       expect(results.length).toEqual(1);
       expect(results[0]).toEqual({
         ...userObject,
-        dateColumn: nowUtcWithDatePrecision,
+        dateColumn: nowWithoutTimezoneDatePrecision,
         numericColumn: '50.5',
       });
     });
