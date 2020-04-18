@@ -4,6 +4,7 @@ const $neq = Symbol('$neq');
 const $in = Symbol('$in');
 
 import * as PgSql2 from 'pg-sql2';
+import { QueryConfig } from 'pg';
 import { IDatabase } from 'pg-promise';
 
 export const Op = {
@@ -35,6 +36,7 @@ type SupportedTypes = {
   box: 'Not supported yet!';
   bytea: 'Not supported yet!';
   char: string;
+  bpchar: string;
   cidr: 'Not supported yet!';
   circle: 'Not supported yet!';
   date: Date;
@@ -59,8 +61,8 @@ type SupportedTypes = {
   polygon: 'Not supported yet!';
   text: string;
   time: 'Not supported yet!';
-  timestamp: number;
-  timestamptz: number;
+  timestamp: Date;
+  timestamptz: Date;
   timetz: 'Not supported yet!';
   tsquery: 'Not supported yet!';
   tsvector: 'Not supported yet!';
@@ -132,92 +134,10 @@ class Query<
   SelectedTable extends Table,
   ExistingColumns extends keyof SelectedTable['columns'] = never
 > {
-  private table!: SelectedTable;
-  private columns: Array<keyof SelectedTable['columns']> | '*' = [];
-  private conditions: Array<
-    [
-      keyof SelectedTable['columns'],
-      Operators,
-      OperandTypeForOperator<
-        Operators,
-        GetColumnJSType<SelectedTable, keyof SelectedTable['columns']>
-      >,
-    ]
-  > = [];
+  protected table!: SelectedTable;
 
-  select<NewColumns extends Array<keyof SelectedTable['columns']> | '*'>(
-    columns: NewColumns,
-  ): Query<
-    SelectedTable,
-    | ExistingColumns
-    | (NewColumns extends '*'
-        ? keyof SelectedTable['columns']
-        : NewColumns[number])
-  > {
-    if (this.columns === '*') {
-    } else if (columns === '*') {
-      this.columns = '*';
-    } else {
-      this.columns.push(...columns);
-    }
-    return this as Query<
-      SelectedTable,
-      | ExistingColumns
-      | (NewColumns extends '*'
-          ? keyof SelectedTable['columns']
-          : NewColumns[number])
-    >;
-  }
-
-  where<
-    ConditionColumn extends keyof SelectedTable['columns'],
-    Operator extends Operators
-  >(
-    condition: [
-      ConditionColumn,
-      Operator,
-      OperandTypeForOperator<
-        Operator,
-        GetColumnJSType<SelectedTable, ConditionColumn>
-      >,
-    ],
-  ): Query<SelectedTable, ExistingColumns> {
-    this.conditions.push(condition);
-    return this;
-  }
-
-  // then(
-  //   onfulfilled?: (
-  //     value: Array<
-  //       {
-  //         [Col in ExistingColumns]: GetColumnJSType<SelectedTable, Col>;
-  //       }
-  //     >,
-  //   ) => any,
-  //   onrejected?: (reason: any) => any,
-  // ): any;
-
-  getQuery() {
-    const from = PgSql2.identifier(this.table.name);
-    const fields = Array.isArray(this.columns)
-      ? PgSql2.join(
-          this.columns.map((fieldName) =>
-            PgSql2.identifier(this.table.name, fieldName as string),
-          ),
-          ', ',
-        )
-      : PgSql2.raw('*');
-
-    const conditions =
-      this.conditions.length > 0
-        ? PgSql2.query`WHERE ${PgSql2.join(
-            this.conditions.map((c) => conditionToSql(c)),
-            ') AND (',
-          )}`
-        : PgSql2.query``;
-
-    const query = PgSql2.query`SELECT ${fields} FROM ${from} ${conditions}`;
-    return PgSql2.compile(query);
+  getQuery(): QueryConfig {
+    throw new Error('Not implemented!');
   }
 
   execute(
@@ -239,8 +159,148 @@ class Query<
   }
 }
 
+class SelectQuery<
+  SelectedTable extends Table,
+  ExistingColumns extends keyof SelectedTable['columns'] = never
+> extends Query<SelectedTable, ExistingColumns> {
+  private columns: Array<keyof SelectedTable['columns']> | '*' = [];
+  private conditions: Array<
+    [
+      keyof SelectedTable['columns'],
+      Operators,
+      OperandTypeForOperator<
+        Operators,
+        GetColumnJSType<SelectedTable, keyof SelectedTable['columns']>
+      >,
+    ]
+  > = [];
+
+  select<NewColumns extends Array<keyof SelectedTable['columns']> | '*'>(
+    columns: NewColumns,
+  ): SelectQuery<
+    SelectedTable,
+    | ExistingColumns
+    | (NewColumns extends '*'
+        ? keyof SelectedTable['columns']
+        : NewColumns[number])
+  > {
+    if (this.columns === '*') {
+    } else if (columns === '*') {
+      this.columns = '*';
+    } else {
+      this.columns.push(...columns);
+    }
+    return this as SelectQuery<
+      SelectedTable,
+      | ExistingColumns
+      | (NewColumns extends '*'
+          ? keyof SelectedTable['columns']
+          : NewColumns[number])
+    >;
+  }
+
+  where<
+    ConditionColumn extends keyof SelectedTable['columns'],
+    Operator extends Operators
+  >(
+    condition: [
+      ConditionColumn,
+      Operator,
+      OperandTypeForOperator<
+        Operator,
+        GetColumnJSType<SelectedTable, ConditionColumn>
+      >,
+    ],
+  ): SelectQuery<SelectedTable, ExistingColumns> {
+    this.conditions.push(condition);
+    return this;
+  }
+
+  getQuery(): QueryConfig {
+    const from = PgSql2.identifier(this.table.name);
+    const fields = Array.isArray(this.columns)
+      ? PgSql2.join(
+          this.columns.map((fieldName) =>
+            PgSql2.identifier(this.table.name, fieldName as string),
+          ),
+          ', ',
+        )
+      : PgSql2.raw('*');
+
+    const conditions =
+      this.conditions.length > 0
+        ? PgSql2.query`WHERE ${PgSql2.join(
+            this.conditions.map((c) => conditionToSql(c)),
+            ') AND (',
+          )}`
+        : PgSql2.query``;
+
+    const query = PgSql2.query`SELECT ${fields} FROM ${from} ${conditions}`;
+
+    return PgSql2.compile(query);
+  }
+
+  constructor(table: SelectedTable) {
+    super(table);
+  }
+}
+
+class InsertQuery<
+  SelectedTable extends Table,
+  ExistingColumns extends keyof SelectedTable['columns'] = never
+> extends Query<SelectedTable, ExistingColumns> {
+  private entityData:
+    | {
+        [K in keyof SelectedTable['columns']]: GetColumnJSType<
+          SelectedTable,
+          keyof SelectedTable['columns']
+        >;
+      }
+    | null;
+
+  insertOne<
+    NewEntity extends {
+      [K in keyof SelectedTable['columns']]: GetColumnJSType<SelectedTable, K>;
+    }
+  >(data: NewEntity): InsertQuery<SelectedTable> {
+    this.entityData = data;
+
+    return this;
+  }
+
+  getQuery(): QueryConfig {
+    if (!this.entityData) {
+      throw new Error(
+        'No statement has been provided! Use i.e. "insertOne()" first.',
+      );
+    }
+
+    const from = PgSql2.identifier(this.table.name);
+    const columns = PgSql2.join(
+      Object.keys(this.entityData).map((value) => PgSql2.identifier(value)),
+      ', ',
+    );
+    const values = PgSql2.join(
+      Object.values(this.entityData).map((value) => PgSql2.value(value)),
+      ', ',
+    );
+
+    const query = PgSql2.query`INSERT INTO ${from}(${columns}) VALUES(${values})`;
+
+    return PgSql2.compile(query);
+  }
+
+  constructor(table: SelectedTable) {
+    super(table);
+    this.entityData = null;
+  }
+}
+
 export const Gostek = {
-  from<T extends Table>(table: T): Query<T> {
-    return new Query(table);
+  from<T extends Table>(table: T): SelectQuery<T> {
+    return new SelectQuery(table);
+  },
+  to<T extends Table>(table: T): InsertQuery<T> {
+    return new InsertQuery(table);
   },
 };

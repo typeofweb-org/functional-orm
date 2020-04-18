@@ -19,6 +19,12 @@ async () => {
   // $ExpectError
   Gostek.from(User).select(['id']).where(['id', Op.$in, null]);
 
+  // $ExpectError
+  Gostek.to(User).select();
+
+  // $ExpectError
+  Gostek.to(User).insertOne();
+
   Gostek.from(User)
     .select(['id'])
     // $ExpectError
