@@ -108,7 +108,7 @@ describe('unit tests', () => {
   });
 });
 
-describe('integration tests', () => {
+describe.only('integration tests', () => {
   const db = getDbConnection({
     user: 'test',
     database: 'test',
@@ -139,13 +139,13 @@ describe('integration tests', () => {
       const userSchema = result.find((i) => i.tableName === 'user');
       expect(userSchema).toBeDefined();
 
-      expect(userSchema!.schema).toIncludeSameMembers([
+      expect(userSchema!.schema).toEqual([
         { column_name: 'id', is_nullable: 'NO', udt_name: 'int4' },
         { column_name: 'email', is_nullable: 'NO', udt_name: 'text' },
         { column_name: 'name', is_nullable: 'YES', udt_name: 'text' },
         { column_name: 'boolColumn', is_nullable: 'NO', udt_name: 'bool' },
         { column_name: 'charColumn', is_nullable: 'YES', udt_name: 'bpchar' },
-        { column_name: 'dateColumn', is_nullable: 'NO', udt_name: 'date' },
+        { column_name: 'dateColumn', is_nullable: 'YES', udt_name: 'date' },
         { column_name: 'float4Column', is_nullable: 'YES', udt_name: 'float4' },
         { column_name: 'float8Column', is_nullable: 'NO', udt_name: 'float8' },
         { column_name: 'int2Column', is_nullable: 'YES', udt_name: 'int2' },
@@ -203,7 +203,7 @@ export const User = {
     name: { type: 'text', notNull: false },
     boolColumn: { type: 'bool', notNull: true },
     charColumn: { type: 'bpchar', notNull: false },
-    dateColumn: { type: 'date', notNull: true },
+    dateColumn: { type: 'date', notNull: false },
     float4Column: { type: 'float4', notNull: false },
     float8Column: { type: 'float8', notNull: true },
     int2Column: { type: 'int2', notNull: false },
@@ -224,7 +224,7 @@ export const User = {
     });
   });
 
-  describe.only('querybuilder', () => {
+  describe('querybuilder', () => {
     it('builds queries', () => {
       expect(Gostek.from(User).select('*').getQuery()).toEqual({
         text: 'SELECT * FROM "user" ',
@@ -259,7 +259,7 @@ export const User = {
       });
     });
 
-    it.only('can insert a full new entity to database', async () => {
+    it('can insert a full new entity to database', async () => {
       const nowWithoutTimezone = new Date('2020-04-13T22:00:00.000Z');
       nowWithoutTimezone.setMinutes(nowWithoutTimezone.getTimezoneOffset());
 
@@ -294,7 +294,6 @@ export const User = {
     it('can insert new entity of only required fields to database', async () => {
       const nowWithoutTimezone = new Date('2020-04-13T22:00:00.000Z');
       nowWithoutTimezone.setMinutes(nowWithoutTimezone.getTimezoneOffset());
-      const date = new Date();
 
       const userObject = {
         id: 1,
@@ -302,7 +301,7 @@ export const User = {
         name: null,
         boolColumn: false,
         charColumn: null,
-        dateColumn: date,
+        dateColumn: new Date('2020-04-15T22:00:00.000Z'),
         float4Column: null,
         float8Column: 3.14,
         int2Column: null,
@@ -317,7 +316,9 @@ export const User = {
 
       await Gostek.to(User).insertOne(userObject).execute(db);
 
-      expect((await Gostek.from(User).select('*').execute(db))[0]).toEqual({
+      const results = await Gostek.from(User).select('*').execute(db);
+      expect(results.length).toEqual(1);
+      expect(results[0]).toEqual({
         ...userObject,
         numericColumn: '50.5',
       });
