@@ -6,6 +6,7 @@ const User = {
   columns: {
     id: { type: 'int4', notNull: true },
     name: { type: 'text', notNull: false },
+    userData: { type: 'jsonb', notNull: true },
   },
 } as const;
 
@@ -19,6 +20,9 @@ async () => {
   // $ExpectError
   Gostek.from(User).select(['id']).where(['id', Op.$in, null]);
 
+  // $ExpectError
+  Gostek.from(User).select(['userData']).where(['userData', Op.$eq, undefined]);
+
   Gostek.from(User)
     .select(['id'])
     // $ExpectError
@@ -30,7 +34,7 @@ async () => {
     .where(['id', Op.$in, [1, 2, 3]])
     .execute({} as any);
 
-  // $ExpectType { readonly id: number; readonly name: string | null; }[]
+  // $ExpectType { readonly id: number; readonly name: string | null; readonly userData: string | number | boolean | Json[] | Pretty<{ [prop: string]: Json; }> | null; }[]
   await Gostek.from(User)
     .select('*')
     .execute({} as any);
