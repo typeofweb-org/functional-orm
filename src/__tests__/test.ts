@@ -73,11 +73,11 @@ describe('unit tests', () => {
         }),
       ).toEqual(
         `
-  export const User = {
-    name: 'user',
-    columns: { id: { type: 'int4', notNull: true }, name: { type: 'text', notNull: false } },
-  } as const;
-  `.trimStart(),
+export const User = {
+  name: 'user',
+  columns: { id: { type: 'int4', notNull: true }, name: { type: 'text', notNull: false } },
+} as const;
+`.trimStart(),
       );
     });
 
@@ -91,24 +91,30 @@ describe('unit tests', () => {
               name: { type: 'text', notNull: false },
             },
           },
-          { printWidth: 80, useTabs: true },
+          { printWidth: 30 },
         ),
       ).toEqual(
         `
-  export const User = {
-    name: 'user',
-    columns: {
-      id: { type: 'int4', notNull: true },
-      name: { type: 'text', notNull: false },
+export const User = {
+  name: 'user',
+  columns: {
+    id: {
+      type: 'int4',
+      notNull: true,
     },
-  } as const;
-  `.trimStart(),
+    name: {
+      type: 'text',
+      notNull: false,
+    },
+  },
+} as const;
+`.trimStart(),
       );
     });
   });
 });
 
-describe.only('integration tests', () => {
+describe('integration tests', () => {
   const db = getDbConnection({
     user: 'test',
     database: 'test',
@@ -155,6 +161,11 @@ describe.only('integration tests', () => {
           column_name: 'numericColumn',
           is_nullable: 'NO',
           udt_name: 'numeric',
+        },
+        {
+          column_name: 'jsonbColumn',
+          is_nullable: 'NO',
+          udt_name: 'jsonb',
         },
         { column_name: 'textColumn', is_nullable: 'YES', udt_name: 'text' },
         {
@@ -210,6 +221,7 @@ export const User = {
     int4Column: { type: 'int4', notNull: true },
     int8Column: { type: 'int8', notNull: false },
     numericColumn: { type: 'numeric', notNull: true },
+    jsonbColumn: { type: 'jsonb', notNull: true },
     textColumn: { type: 'text', notNull: false },
     timestampColumn: { type: 'timestamp', notNull: true },
     timestamptzColumn: { type: 'timestamptz', notNull: false },
@@ -282,6 +294,12 @@ export const User = {
         int4Column: 11,
         int8Column: 1,
         numericColumn: 50.5,
+        jsonbColumn: {
+          some: 'value',
+          is: 1,
+          and: ['has_array', 'of', 'values'],
+          nullIsOk: null,
+        },
         textColumn: 'some text',
         timestampColumn: nowWithoutTimezone,
         timestamptzColumn: new Date('2020-04-13T22:00:00.000Z'),
@@ -321,6 +339,12 @@ export const User = {
         int4Column: 11,
         int8Column: null,
         numericColumn: 50.5,
+        jsonbColumn: {
+          some: 'value',
+          is: 1,
+          and: ['has_array', 'of', 'values'],
+          nullIsOk: null,
+        },
         textColumn: null,
         timestampColumn: nowWithoutTimezone,
         timestamptzColumn: null,
@@ -354,6 +378,12 @@ export const User = {
         int4Column: 11,
         int8Column: null,
         numericColumn: '50.50',
+        jsonbColumn: {
+          some: 'value',
+          is: 1,
+          and: ['has_array', 'of', 'values'],
+          nullIsOk: null,
+        },
         textColumn: 'some text',
         timestampColumn: nowWithoutTimezone,
         timestamptzColumn: new Date('2020-04-13T22:00:00.000Z'),
@@ -372,6 +402,12 @@ export const User = {
         int4Column: 11,
         int8Column: null,
         numericColumn: '50.50',
+        jsonbColumn: {
+          some: 'value',
+          is: 1,
+          and: ['has_array', 'of', 'values'],
+          nullIsOk: null,
+        },
         textColumn: 'some text',
         timestampColumn: nowWithoutTimezone,
         timestamptzColumn: new Date('2020-04-13T22:00:00.000Z'),
@@ -391,6 +427,7 @@ export const User = {
         11,
         NULL,
         50.50,
+        '{"some": "value", "is": 1, "and": ["has_array", "of", "values"], "nullIsOk": null}',
         'some text',
         '2020-04-13T22:00:00.000Z',
         '2020-04-13T22:00:00.000Z',
@@ -409,6 +446,7 @@ export const User = {
         11,
         NULL,
         50.50,
+        '{"some": "value", "is": 1, "and": ["has_array", "of", "values"], "nullIsOk": null}',
         'some text',
         '2020-04-13T22:00:00.000Z',
         '2020-04-13T22:00:00.000Z',

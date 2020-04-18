@@ -25,6 +25,14 @@ export type Table = {
   columns: Record<string, ColumnMetaData<Table>>;
 };
 
+type Json =
+  | null
+  | boolean
+  | number
+  | string
+  | Json[]
+  | { [prop: string]: Json };
+
 type Pretty<T> = { [K in keyof T]: T[K] };
 
 /**
@@ -48,7 +56,7 @@ type SupportedTypes = {
   int8: number;
   interval: 'Not supported yet!';
   json: 'Not supported yet!';
-  jsonb: 'Not supported yet!';
+  jsonb: Json;
   line: 'Not supported yet!';
   lseg: 'Not supported yet!';
   macaddr: 'Not supported yet!';
