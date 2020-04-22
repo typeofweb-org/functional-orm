@@ -311,7 +311,6 @@ export const User = {
       expect((await Gostek.from(User).select('*').execute(db))[0]).toEqual({
         ...userObject,
         dateColumn: nowWithoutTimezoneDatePrecision,
-        int8Column: 10n,
         numericColumn: '50.5',
       });
     });
