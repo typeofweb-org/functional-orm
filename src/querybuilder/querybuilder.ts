@@ -53,7 +53,7 @@ type SupportedTypes = {
   inet: 'Not supported yet!';
   int2: number;
   int4: number;
-  int8: number;
+  int8: BigInt;
   interval: 'Not supported yet!';
   json: 'Not supported yet!';
   jsonb: Json;
