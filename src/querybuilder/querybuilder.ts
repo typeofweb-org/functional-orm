@@ -25,7 +25,7 @@ export type Table = {
   columns: Record<string, ColumnMetaData<Table>>;
 };
 
-type Json =
+export type Json =
   | null
   | boolean
   | number
@@ -33,7 +33,7 @@ type Json =
   | Json[]
   | { [prop: string]: Json };
 
-type Pretty<T> = { [K in keyof T]: T[K] };
+export type Pretty<T> = { [K in keyof T]: T[K] };
 
 /**
  * @description Convert SQL column string literal type to JavaScript type
@@ -53,7 +53,7 @@ type SupportedTypes = {
   inet: 'Not supported yet!';
   int2: number;
   int4: number;
-  int8: number;
+  int8: BigInt;
   interval: 'Not supported yet!';
   json: 'Not supported yet!';
   jsonb: Json;
@@ -91,11 +91,9 @@ type GetJSTypeFromSqlType<
 type GetColumnJSType<
   SelectedTable extends Table,
   SelectedColumn extends keyof SelectedTable['columns']
-> = Pretty<
-  GetJSTypeFromSqlType<
-    SelectedTable['columns'][SelectedColumn]['type'],
-    SelectedTable['columns'][SelectedColumn]['notNull']
-  >
+> = GetJSTypeFromSqlType<
+  SelectedTable['columns'][SelectedColumn]['type'],
+  SelectedTable['columns'][SelectedColumn]['notNull']
 >;
 
 /**

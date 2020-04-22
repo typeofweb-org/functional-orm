@@ -2,6 +2,8 @@ import PgPromise, { QueryFile } from 'pg-promise';
 
 export const pgp = PgPromise();
 
+pgp.pg.types.setTypeParser(20, BigInt);
+
 type ConnectionOptions =
   | {
       connectionString: string;
