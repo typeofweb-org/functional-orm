@@ -7,6 +7,7 @@ const User = {
     id: { type: 'int4', notNull: true },
     name: { type: 'text', notNull: false },
     userData: { type: 'jsonb', notNull: true },
+    int8Column: { type: 'int8', notNull: true },
   },
 } as const;
 
@@ -46,7 +47,7 @@ async () => {
     .where(['id', Op.$in, [1, 2, 3]])
     .execute({} as any);
 
-  // $ExpectType { readonly id: number; readonly name: string | null; readonly userData: string | number | boolean | Json[] | Pretty<{ [prop: string]: Json; }> | null; }[]
+  // $ExpectType { readonly id: number; readonly name: string | null; readonly userData: Json; readonly int8Column: BigInt; }[]
   await Gostek.from(User)
     .select('*')
     .execute({} as any);

@@ -91,12 +91,14 @@ type GetJSTypeFromSqlType<
 type GetColumnJSType<
   SelectedTable extends Table,
   SelectedColumn extends keyof SelectedTable['columns']
-> = Pretty<
-  GetJSTypeFromSqlType<
-    SelectedTable['columns'][SelectedColumn]['type'],
-    SelectedTable['columns'][SelectedColumn]['notNull']
-  >
->;
+> = GetJSTypeFromSqlType<
+  SelectedTable['columns'][SelectedColumn]['type'],
+  SelectedTable['columns'][SelectedColumn]['notNull']
+> extends infer Result
+  ? Result extends Json | BigInt
+    ? Result
+    : Pretty<Result>
+  : never;
 
 /**
  * @description information about column such as if it's nullable, foreign key, autoincrement etc.
