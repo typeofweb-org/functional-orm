@@ -145,7 +145,7 @@ describe('integration tests', () => {
       const userSchema = result.find((i) => i.tableName === 'user');
       expect(userSchema).toBeDefined();
 
-      expect(userSchema!.schema).toIncludeSameMembers([
+      expect(userSchema!.schema).toEqual([
         { column_name: 'id', is_nullable: 'NO', udt_name: 'int4' },
         { column_name: 'email', is_nullable: 'NO', udt_name: 'text' },
         { column_name: 'name', is_nullable: 'YES', udt_name: 'text' },
@@ -271,7 +271,98 @@ export const User = {
       });
     });
 
-    it('runs queries', async () => {
+    it('can insert a full new entity to database', async () => {
+      const nowWithoutTimezone = new Date('2020-04-13T22:00:00.000Z');
+      nowWithoutTimezone.setMinutes(nowWithoutTimezone.getTimezoneOffset());
+      const nowWithoutTimezoneDatePrecision = new Date(
+        '2020-04-13T00:00:00.000Z',
+      );
+      nowWithoutTimezoneDatePrecision.setMinutes(
+        nowWithoutTimezoneDatePrecision.getTimezoneOffset(),
+      );
+
+      const userObject = {
+        id: 1,
+        email: 'michal@typeofweb.com',
+        name: 'Michał',
+        boolColumn: false,
+        charColumn: '',
+        dateColumn: nowWithoutTimezone,
+        float4Column: 4.5,
+        float8Column: 3.14,
+        int2Column: 2,
+        int4Column: 11,
+        int8Column: 1,
+        numericColumn: 50.5,
+        jsonbColumn: {
+          some: 'value',
+          is: 1,
+          and: ['has_array', 'of', 'values'],
+          nullIsOk: null,
+        },
+        textColumn: 'some text',
+        timestampColumn: nowWithoutTimezone,
+        timestamptzColumn: new Date('2020-04-13T22:00:00.000Z'),
+        varcharColumn: '',
+      };
+
+      await Gostek.to(User).insertOne(userObject).execute(db);
+
+      expect((await Gostek.from(User).select('*').execute(db))[0]).toEqual({
+        ...userObject,
+        dateColumn: nowWithoutTimezoneDatePrecision,
+        int8Column: '1',
+        numericColumn: '50.5',
+      });
+    });
+
+    it('can insert new entity of only required fields to database', async () => {
+      const nowWithoutTimezone = new Date('2020-04-13T22:00:00.000Z');
+      nowWithoutTimezone.setMinutes(nowWithoutTimezone.getTimezoneOffset());
+      const nowWithoutTimezoneDatePrecision = new Date(
+        '2020-04-13T00:00:00.000Z',
+      );
+      nowWithoutTimezoneDatePrecision.setMinutes(
+        nowWithoutTimezoneDatePrecision.getTimezoneOffset(),
+      );
+
+      const userObject = {
+        id: 1,
+        email: 'michal@typeofweb.com',
+        name: null,
+        boolColumn: false,
+        charColumn: null,
+        dateColumn: nowWithoutTimezone,
+        float4Column: null,
+        float8Column: 3.14,
+        int2Column: null,
+        int4Column: 11,
+        int8Column: null,
+        numericColumn: 50.5,
+        jsonbColumn: {
+          some: 'value',
+          is: 1,
+          and: ['has_array', 'of', 'values'],
+          nullIsOk: null,
+        },
+        textColumn: null,
+        timestampColumn: nowWithoutTimezone,
+        timestamptzColumn: null,
+        varcharColumn: '',
+      };
+
+      await Gostek.to(User).insertOne(userObject).execute(db);
+
+      const results = await Gostek.from(User).select('*').execute(db);
+      expect(results.length).toEqual(1);
+      expect(results[0]).toEqual({
+        ...userObject,
+        dateColumn: nowWithoutTimezoneDatePrecision,
+        numericColumn: '50.5',
+      });
+    });
+
+    it('runs select queries', async () => {
       const nowWithoutTimezone = new Date('2020-04-13T22:00:00.000Z');
       nowWithoutTimezone.setMinutes(nowWithoutTimezone.getTimezoneOffset());
       const one = {
@@ -361,13 +452,16 @@ export const User = {
         '2020-04-13T22:00:00.000Z',
         ''
       );`);
-      expect(
-        await Gostek.from(User).select('*').execute(db),
-      ).toIncludeAllMembers([one, two]);
 
-      expect(
-        await Gostek.from(User).select(['id']).execute(db),
-      ).toIncludeAllMembers([{ id: one.id }, { id: two.id }]);
+      expect(await Gostek.from(User).select('*').execute(db)).toEqual([
+        one,
+        two,
+      ]);
+
+      expect(await Gostek.from(User).select(['id']).execute(db)).toEqual([
+        { id: one.id },
+        { id: two.id },
+      ]);
 
       expect(
         await Gostek.from(User)
@@ -375,14 +469,14 @@ export const User = {
           .select('*')
           .where(['name', Op.$eq, 'Michał'])
           .execute(db),
-      ).toIncludeAllMembers([one]);
+      ).toEqual([one]);
 
       expect(
         await Gostek.from(User)
           .select(['id', 'name'])
           .where(['id', Op.$in, [1, 2, 3]])
           .execute(db),
-      ).toIncludeAllMembers([{ id: one.id, name: one.name }]);
+      ).toEqual([{ id: one.id, name: one.name }]);
     });
   });
 });

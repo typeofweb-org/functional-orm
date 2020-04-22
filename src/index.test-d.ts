@@ -21,6 +21,18 @@ async () => {
   Gostek.from(User).select(['id']).where(['id', Op.$in, null]);
 
   // $ExpectError
+  Gostek.to(User).select();
+
+  // $ExpectError
+  Gostek.to(User).insertOne();
+
+  // $ExpectError
+  Gostek.to(User).insertOne({ notExisting: 'field' });
+
+  // $ExpectError
+  Gostek.to(User).insertOne({ name: 1 });
+
+  // $ExpectError
   Gostek.from(User).select(['userData']).where(['userData', Op.$eq, undefined]);
 
   Gostek.from(User)
