@@ -25,7 +25,7 @@ export type Table = {
   columns: Record<string, ColumnMetaData<Table>>;
 };
 
-type Json =
+export type Json =
   | null
   | boolean
   | number
@@ -33,7 +33,7 @@ type Json =
   | Json[]
   | { [prop: string]: Json };
 
-type Pretty<T> = { [K in keyof T]: T[K] };
+export type Pretty<T> = { [K in keyof T]: T[K] };
 
 /**
  * @description Convert SQL column string literal type to JavaScript type
@@ -94,11 +94,7 @@ type GetColumnJSType<
 > = GetJSTypeFromSqlType<
   SelectedTable['columns'][SelectedColumn]['type'],
   SelectedTable['columns'][SelectedColumn]['notNull']
-> extends infer Result
-  ? Result extends Json | BigInt
-    ? Result
-    : Pretty<Result>
-  : never;
+>;
 
 /**
  * @description information about column such as if it's nullable, foreign key, autoincrement etc.
