@@ -9,7 +9,7 @@ import {
 } from '../generator';
 import Path from 'path';
 import { compileTypeScriptCode } from './tsCompiler';
-import { Gostek, Op } from '../querybuilder/querybuilder';
+import { Gostek, Op, WhereOp } from '../querybuilder/querybuilder';
 import { User } from './generated/models';
 
 describe('unit tests', () => {
@@ -252,7 +252,7 @@ export const User = {
         Gostek.from(User)
           .select(['id'])
           .select('*')
-          .where(['name', Op.$eq, 'Michał'])
+          .where({ [WhereOp.$and]: [['name', Op.$eq, 'Michał']] })
           .getQuery(),
       ).toEqual({
         text: 'SELECT * FROM "user" WHERE "name" = $1',
@@ -262,12 +262,28 @@ export const User = {
       expect(
         Gostek.from(User)
           .select(['id', 'name'])
-          .where(['id', Op.$in, [1, 2, 3]])
+          .where({ [WhereOp.$and]: [['id', Op.$in, [1, 2, 3]]] })
           .getQuery(),
       ).toEqual({
         text:
           'SELECT "user"."id", "user"."name" FROM "user" WHERE "id" in ($1,$2,$3)',
         values: [1, 2, 3],
+      });
+
+      expect(
+        Gostek.from(User)
+          .select(['id', 'name'])
+          .where({
+            [WhereOp.$and]: [
+              ['id', Op.$in, [1, 2, 3]],
+              ['name', Op.$eq, 'Kasia'],
+            ],
+          })
+          .getQuery(),
+      ).toEqual({
+        text:
+          'SELECT "user"."id", "user"."name" FROM "user" WHERE "id" in ($1,$2,$3) AND "name" = $4',
+        values: [1, 2, 3, 'Kasia'],
       });
     });
 
@@ -466,16 +482,67 @@ export const User = {
         await Gostek.from(User)
           .select(['id'])
           .select('*')
-          .where(['name', Op.$eq, 'Michał'])
+          .where({ [WhereOp.$and]: [['name', Op.$eq, 'Michał']] })
           .execute(db),
       ).toEqual([one]);
 
       expect(
         await Gostek.from(User)
           .select(['id', 'name'])
-          .where(['id', Op.$in, [1, 2, 3]])
+          .where({ [WhereOp.$and]: [['id', Op.$in, [1, 2, 3]]] })
           .execute(db),
       ).toEqual([{ id: one.id, name: one.name }]);
+
+      expect(
+        await Gostek.from(User)
+          .select(['id', 'name'])
+          .where({
+            [WhereOp.$and]: [
+              ['id', Op.$in, [1, 2, 3]],
+              ['name', Op.$eq, 'Michał'],
+            ],
+          })
+          .execute(db),
+      ).toEqual([{ id: one.id, name: one.name }]);
+
+      expect(
+        await Gostek.from(User)
+          .select(['id', 'name'])
+          .where({
+            [WhereOp.$and]: [
+              ['id', Op.$in, [1, 2, 3]],
+              ['name', Op.$eq, 'NieKasia'],
+            ],
+          })
+          .execute(db),
+      ).toEqual([]);
+
+      expect(
+        await Gostek.from(User)
+          .select(['id', 'name'])
+          .where({
+            [WhereOp.$or]: [
+              ['id', Op.$in, [1, 2, 3]],
+              ['name', Op.$eq, 'NieKasia'],
+            ],
+          })
+          .execute(db),
+      ).toEqual([{ id: one.id, name: one.name }]);
+
+      expect(
+        await Gostek.from(User)
+          .select(['id', 'name'])
+          .where({
+            [WhereOp.$or]: [
+              ['name', Op.$eq, 'Michał'],
+              ['name', Op.$eq, 'Kasia'],
+            ],
+          })
+          .execute(db),
+      ).toEqual([
+        { id: one.id, name: one.name },
+        { id: two.id, name: two.name },
+      ]);
     });
   });
 });

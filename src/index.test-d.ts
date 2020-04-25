@@ -1,4 +1,4 @@
-import { Gostek, Op } from './querybuilder/querybuilder';
+import { Gostek, Op, WhereOp } from './querybuilder/querybuilder';
 // tslint:disable:no-magic-numbers
 
 const User = {
@@ -16,10 +16,14 @@ async () => {
   Gostek.from(User).select('foo');
 
   // $ExpectError
-  Gostek.from(User).select('*').where(['id', Op.$eq, null]);
+  Gostek.from(User)
+    .select('*')
+    .where({ [WhereOp.$and]: [['id', Op.$eq, null]] });
 
   // $ExpectError
-  Gostek.from(User).select(['id']).where(['id', Op.$in, null]);
+  Gostek.from(User)
+    .select(['id'])
+    .where({ [WhereOp.$and]: [['id', Op.$in, null]] });
 
   // $ExpectError
   Gostek.to(User).select();
@@ -34,17 +38,28 @@ async () => {
   Gostek.to(User).insertOne({ name: 1 });
 
   // $ExpectError
-  Gostek.from(User).select(['userData']).where(['userData', Op.$eq, undefined]);
+  Gostek.from(User)
+    .select(['userData'])
+    .where({ [WhereOp.$and]: [['userData', Op.$eq, undefined]] });
 
+  // $ExpectError
+  Gostek.from(User)
+    .select(['userData'])
+    .where({
+      [WhereOp.$and]: [['name', Op.$eq, 'name']],
+      [WhereOp.$or]: [['name', Op.$eq, 'name']],
+    });
+
+  // $ExpectError
   Gostek.from(User)
     .select(['id'])
     // $ExpectError
-    .where(['id', Op.$in, ['a', 'b', 'c']]);
+    .where({ [WhereOp.$and]: [['id', Op.$in, ['a', 'b', 'c']]] });
 
   // $ExpectType { readonly name: string | null; }[]
   await Gostek.from(User)
     .select(['name'])
-    .where(['id', Op.$in, [1, 2, 3]])
+    .where({ [WhereOp.$and]: [['id', Op.$in, [1, 2, 3]]] })
     .execute({} as any);
 
   // $ExpectType { readonly id: number; readonly name: string | null; readonly userData: Json; readonly int8Column: BigInt; }[]

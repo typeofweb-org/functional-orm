@@ -2,6 +2,8 @@ import { ColumnType } from '../generator/types';
 const $eq = Symbol('$eq');
 const $neq = Symbol('$neq');
 const $in = Symbol('$in');
+const $or = '$or';
+const $and = '$and';
 
 import * as PgSql2 from 'pg-sql2';
 import { QueryConfig } from 'pg';
@@ -13,6 +15,12 @@ export const Op = {
   $in: $in,
 } as const;
 type Operators = typeof Op[keyof typeof Op];
+
+export const WhereOp = {
+  $or: $or,
+  $and: $and,
+} as const;
+type WhereJoinOperators = typeof WhereOp[keyof typeof WhereOp];
 
 type OperandTypeForOperator<O extends Operators, T> = {
   [$eq]: T;
@@ -34,6 +42,13 @@ export type Json =
   | { [prop: string]: Json };
 
 export type Pretty<T> = { [K in keyof T]: T[K] };
+
+type OneKey<Key extends string, Value = any> = {
+  [P in Key]: Record<P, Value> &
+    Partial<Record<Exclude<Key, P>, never>> extends infer O
+    ? { [Q in keyof O]: O[Q] }
+    : never;
+}[Key];
 
 /**
  * @description Convert SQL column string literal type to JavaScript type
@@ -133,6 +148,9 @@ function conditionToSql<SelectedTable extends Table>([
         (value as Array<any>).map((v) => PgSql2.value(v)),
         ',',
       )})`;
+    default:
+      const _: never = operator;
+      return PgSql2.query``;
   }
 }
 
@@ -170,16 +188,17 @@ class SelectQuery<
   ExistingColumns extends keyof SelectedTable['columns'] = never
 > extends Query<SelectedTable, ExistingColumns> {
   private columns: Array<keyof SelectedTable['columns']> | '*' = [];
-  private conditions: Array<
-    [
+  private conditionsData: Array<{
+    whereJoinOperator: WhereJoinOperators;
+    conditions: [
       keyof SelectedTable['columns'],
       Operators,
       OperandTypeForOperator<
         Operators,
         GetColumnJSType<SelectedTable, keyof SelectedTable['columns']>
       >,
-    ]
-  > = [];
+    ][];
+  }> = [];
 
   select<NewColumns extends Array<keyof SelectedTable['columns']> | '*'>(
     columns: NewColumns,
@@ -205,20 +224,32 @@ class SelectQuery<
     >;
   }
 
+  // TODO: how to type this?
   where<
     ConditionColumn extends keyof SelectedTable['columns'],
     Operator extends Operators
   >(
-    condition: [
-      ConditionColumn,
-      Operator,
-      OperandTypeForOperator<
-        Operator,
-        GetColumnJSType<SelectedTable, ConditionColumn>
-      >,
-    ],
+    conditionsData: OneKey<
+      WhereJoinOperators,
+      [
+        ConditionColumn,
+        Operators,
+        OperandTypeForOperator<
+          Operators,
+          GetColumnJSType<SelectedTable, ConditionColumn>
+        >,
+      ][]
+    >,
   ): SelectQuery<SelectedTable, ExistingColumns> {
-    this.conditions.push(condition);
+    for (const [key, value] of Object.entries(conditionsData)) {
+      if (value) {
+        this.conditionsData.push({
+          whereJoinOperator: (key as unknown) as WhereJoinOperators,
+          conditions: value,
+        });
+      }
+    }
+
     return this;
   }
 
@@ -234,12 +265,17 @@ class SelectQuery<
       : PgSql2.raw('*');
 
     const conditions =
-      this.conditions.length > 0
-        ? PgSql2.query`WHERE ${PgSql2.join(
-            this.conditions.map((c) => conditionToSql(c)),
+      this.conditionsData.length < 1
+        ? PgSql2.query``
+        : PgSql2.query`WHERE ${PgSql2.join(
+            this.conditionsData.map((cd) =>
+              PgSql2.join(
+                cd.conditions.map((c) => conditionToSql(c)),
+                cd.whereJoinOperator === WhereOp.$and ? ' AND ' : ' OR ',
+              ),
+            ),
             ') AND (',
-          )}`
-        : PgSql2.query``;
+          )}`;
 
     const query = PgSql2.query`SELECT ${fields} FROM ${from} ${conditions}`;
 
