@@ -246,6 +246,7 @@ class SelectQuery<
       [WhereConditionType<SelectedTable, ConditionColumn, Operator>]
     >,
   ): SelectQuery<SelectedTable, ExistingColumns>;
+  //#region
   where<
     ConditionColumn1 extends keyof SelectedTable['columns'],
     Operator1 extends Operators,
@@ -320,6 +321,7 @@ class SelectQuery<
       ]
     >,
   ): SelectQuery<SelectedTable, ExistingColumns>;
+  //#endregion
   where(conditionsData: any): SelectQuery<SelectedTable, ExistingColumns> {
     for (const [key, value] of Object.entries(conditionsData)) {
       if (value) {
