@@ -509,21 +509,9 @@ export const User = {
         await Gostek.from(User)
           .select(['id', 'name'])
           .where({
-            [WhereOp.$and]: [
-              ['id', Op.$in, [1, 2, 3]],
-              ['name', Op.$eq, 'NieKasia'],
-            ],
-          })
-          .execute(db),
-      ).toEqual([]);
-
-      expect(
-        await Gostek.from(User)
-          .select(['id', 'name'])
-          .where({
             [WhereOp.$or]: [
               ['id', Op.$in, [1, 2, 3]],
-              ['name', Op.$eq, 'NieKasia'],
+              ['name', Op.$eq, 1],
             ],
           })
           .execute(db),

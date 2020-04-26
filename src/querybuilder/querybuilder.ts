@@ -111,6 +111,19 @@ type GetColumnJSType<
   SelectedTable['columns'][SelectedColumn]['notNull']
 >;
 
+type WhereConditionType<
+  SelectedTable extends Table,
+  ConditionColumn extends keyof SelectedTable['columns'],
+  Operator extends Operators
+> = [
+  ConditionColumn,
+  Operator,
+  OperandTypeForOperator<
+    Operator,
+    GetColumnJSType<SelectedTable, ConditionColumn>
+  >,
+];
+
 /**
  * @description information about column such as if it's nullable, foreign key, autoincrement etc.
  */
@@ -224,28 +237,95 @@ class SelectQuery<
     >;
   }
 
-  // TODO: how to type this?
   where<
     ConditionColumn extends keyof SelectedTable['columns'],
     Operator extends Operators
   >(
     conditionsData: OneKey<
       WhereJoinOperators,
-      [
-        ConditionColumn,
-        Operators,
-        OperandTypeForOperator<
-          Operators,
-          GetColumnJSType<SelectedTable, ConditionColumn>
-        >,
-      ][]
+      [WhereConditionType<SelectedTable, ConditionColumn, Operator>]
     >,
-  ): SelectQuery<SelectedTable, ExistingColumns> {
+  ): SelectQuery<SelectedTable, ExistingColumns>;
+  where<
+    ConditionColumn1 extends keyof SelectedTable['columns'],
+    Operator1 extends Operators,
+    ConditionColumn2 extends keyof SelectedTable['columns'],
+    Operator2 extends Operators
+  >(
+    conditionsData: OneKey<
+      WhereJoinOperators,
+      [
+        WhereConditionType<SelectedTable, ConditionColumn1, Operator1>,
+        WhereConditionType<SelectedTable, ConditionColumn2, Operator2>,
+      ]
+    >,
+  ): SelectQuery<SelectedTable, ExistingColumns>;
+  where<
+    ConditionColumn1 extends keyof SelectedTable['columns'],
+    Operator1 extends Operators,
+    ConditionColumn2 extends keyof SelectedTable['columns'],
+    Operator2 extends Operators,
+    ConditionColumn3 extends keyof SelectedTable['columns'],
+    Operator3 extends Operators
+  >(
+    conditionsData: OneKey<
+      WhereJoinOperators,
+      [
+        WhereConditionType<SelectedTable, ConditionColumn1, Operator1>,
+        WhereConditionType<SelectedTable, ConditionColumn2, Operator2>,
+        WhereConditionType<SelectedTable, ConditionColumn3, Operator3>,
+      ]
+    >,
+  ): SelectQuery<SelectedTable, ExistingColumns>;
+  where<
+    ConditionColumn1 extends keyof SelectedTable['columns'],
+    Operator1 extends Operators,
+    ConditionColumn2 extends keyof SelectedTable['columns'],
+    Operator2 extends Operators,
+    ConditionColumn3 extends keyof SelectedTable['columns'],
+    Operator3 extends Operators,
+    ConditionColumn4 extends keyof SelectedTable['columns'],
+    Operator4 extends Operators
+  >(
+    conditionsData: OneKey<
+      WhereJoinOperators,
+      [
+        WhereConditionType<SelectedTable, ConditionColumn1, Operator1>,
+        WhereConditionType<SelectedTable, ConditionColumn2, Operator2>,
+        WhereConditionType<SelectedTable, ConditionColumn3, Operator3>,
+        WhereConditionType<SelectedTable, ConditionColumn4, Operator4>,
+      ]
+    >,
+  ): SelectQuery<SelectedTable, ExistingColumns>;
+  where<
+    ConditionColumn1 extends keyof SelectedTable['columns'],
+    Operator1 extends Operators,
+    ConditionColumn2 extends keyof SelectedTable['columns'],
+    Operator2 extends Operators,
+    ConditionColumn3 extends keyof SelectedTable['columns'],
+    Operator3 extends Operators,
+    ConditionColumn4 extends keyof SelectedTable['columns'],
+    Operator4 extends Operators,
+    ConditionColumn5 extends keyof SelectedTable['columns'],
+    Operator5 extends Operators
+  >(
+    conditionsData: OneKey<
+      WhereJoinOperators,
+      [
+        WhereConditionType<SelectedTable, ConditionColumn1, Operator1>,
+        WhereConditionType<SelectedTable, ConditionColumn2, Operator2>,
+        WhereConditionType<SelectedTable, ConditionColumn3, Operator3>,
+        WhereConditionType<SelectedTable, ConditionColumn4, Operator4>,
+        WhereConditionType<SelectedTable, ConditionColumn5, Operator5>,
+      ]
+    >,
+  ): SelectQuery<SelectedTable, ExistingColumns>;
+  where(conditionsData: any): SelectQuery<SelectedTable, ExistingColumns> {
     for (const [key, value] of Object.entries(conditionsData)) {
       if (value) {
         this.conditionsData.push({
           whereJoinOperator: (key as unknown) as WhereJoinOperators,
-          conditions: value,
+          conditions: value as any,
         });
       }
     }
