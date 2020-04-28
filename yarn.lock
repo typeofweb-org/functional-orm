@@ -3881,10 +3881,10 @@ pg-protocol@^1.2.2:
   resolved "https://registry.yarnpkg.com/pg-protocol/-/pg-protocol-1.2.2.tgz#e16ef28087aa725ce933af092bfe38d8f609faab"
   integrity sha512-r8hGxHOk3ccMjjmhFJ/QOSVW5A+PP84TeRlEwB/cQ9Zu+bvtZg8Z59Cx3AMfVQc9S0Z+EG+HKhicF1W1GN5Eqg==
 
-pg-sql2@4.5.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/pg-sql2/-/pg-sql2-4.5.0.tgz#d1f5f039c5717f8266e340508b1e29e760f5e2ce"
-  integrity sha512-kmqhJgKbOWsVzKjhzsfglZagyrV5fXkrHeY33WdeSsxhegZI1Evpa/lQzG1uQj2ZfLPIePV7RyoaZH8eVHRd3A==
+pg-sql2@4.7.0:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/pg-sql2/-/pg-sql2-4.7.0.tgz#2e4964bc0d94b8a81e4bc13651379a6436f8e370"
+  integrity sha512-/9YtclLJW7nIehd4RPxCECz9+mOAmQ5tkDRLbefzCxgctkKj31tsF6Xu1+Rwnnv7/hKyzH+ShzOJrxPRF8jEAw==
   dependencies:
     "@graphile/lru" "4.5.0"
     "@types/pg" ">=6 <8"
