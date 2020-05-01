@@ -31,7 +31,7 @@
     "eslint-plugin-sonarjs": "0.5.0",
     "fast-check": "1.24.2",
     "husky": "4.2.5",
-    "jest": "25.5.2",
+    "jest": "25.5.3",
     "jest-extended": "0.11.5",
     "lint-staged": "10.2.0",
     "pg-sql2": "4.7.0",
