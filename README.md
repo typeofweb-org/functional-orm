@@ -109,3 +109,6 @@ db.from(User).select(['name']).where(['name', Op.$in, 'Michał']);
 - [x] finish generator which outputs safely-typed models for simple tables
 - [x] support PostgreSQL
 - [x] make sure all queries from the README work on a real database
+
+## 0.2.0 plan
+- [ ] allow for more complex `where` conditions (`and`, `or`)
