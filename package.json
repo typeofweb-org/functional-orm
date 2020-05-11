@@ -42,7 +42,7 @@
     "@types/lodash": "4.14.150",
     "app-root-path": "3.0.0",
     "lodash": "4.17.15",
-    "pg-promise": "10.5.3",
+    "pg-promise": "10.5.5",
     "prettier": "2.0.5",
     "ts-morph": "7.0.3"
   },
