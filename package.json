@@ -19,7 +19,7 @@
   "author": "Michał Miszczyszyn <michal@mmiszy.pl> (https://typeofweb.com/)",
   "license": "ISC",
   "devDependencies": {
-    "@types/jest": "25.2.1",
+    "@types/jest": "25.2.2",
     "@types/node": "14.0.1",
     "@types/ramda": "0.27.4",
     "@typescript-eslint/eslint-plugin": "2.33.0",
