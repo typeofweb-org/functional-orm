@@ -19,32 +19,32 @@
   "author": "Michał Miszczyszyn <michal@mmiszy.pl> (https://typeofweb.com/)",
   "license": "ISC",
   "devDependencies": {
-    "@types/jest": "25.2.1",
-    "@types/node": "13.13.2",
-    "@types/ramda": "0.27.4",
-    "@typescript-eslint/eslint-plugin": "2.29.0",
-    "@typescript-eslint/parser": "2.29.0",
+    "@types/jest": "25.2.3",
+    "@types/node": "14.0.5",
+    "@types/ramda": "0.27.6",
+    "@typescript-eslint/eslint-plugin": "2.34.0",
+    "@typescript-eslint/parser": "2.34.0",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.11.0",
     "eslint-config-typestrict": "1.0.0",
     "eslint-plugin-expect-type": "0.0.4",
     "eslint-plugin-sonarjs": "0.5.0",
-    "fast-check": "1.24.1",
+    "fast-check": "1.24.2",
     "husky": "4.2.5",
-    "jest": "25.4.0",
+    "jest": "25.5.4",
     "jest-extended": "0.11.5",
-    "lint-staged": "10.1.7",
-    "pg-sql2": "4.5.0",
-    "ts-jest": "25.4.0",
-    "typescript": "3.8.3"
+    "lint-staged": "10.2.6",
+    "pg-sql2": "4.7.0",
+    "ts-jest": "25.5.1",
+    "typescript": "3.9.3"
   },
   "dependencies": {
-    "@types/lodash": "4.14.150",
+    "@types/lodash": "4.14.152",
     "app-root-path": "3.0.0",
     "lodash": "4.17.15",
-    "pg-promise": "10.5.2",
+    "pg-promise": "10.5.6",
     "prettier": "2.0.5",
-    "ts-morph": "7.0.2"
+    "ts-morph": "7.1.0"
   },
   "husky": {
     "hooks": {

@@ -104,8 +104,11 @@ db.from(User).select(['name']).where(['name', Op.$in, 'Michał']);
 // Type 'string' is not assignable to type '(string | null)[]'.
 ```
 
-## 1.0 plan
+## 0.1.0 plan
 
-- [ ] finish generator which outputs safely-typed models for simple tables
-- [ ] support PostgreSQL
-- [ ] make sure all queries from the README work on a real database
+- [x] finish generator which outputs safely-typed models for simple tables
+- [x] support PostgreSQL
+- [x] make sure all queries from the README work on a real database
+
+## 0.2.0 plan
+- [ ] allow for more complex `where` conditions (`and`, `or`)
