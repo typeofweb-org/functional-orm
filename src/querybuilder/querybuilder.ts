@@ -2,10 +2,16 @@ import { ColumnType } from '../generator/types';
 const $eq = Symbol('$eq');
 const $neq = Symbol('$neq');
 const $in = Symbol('$in');
+const $or = Symbol('$or');
+const $and = Symbol('$and');
 
 import * as PgSql2 from 'pg-sql2';
 import { QueryConfig } from 'pg';
 import { IDatabase } from 'pg-promise';
+
+function assertUnreachable(x: never): never {
+  throw new Error(x);
+}
 
 export const Op = {
   $eq: $eq,
@@ -13,6 +19,12 @@ export const Op = {
   $in: $in,
 } as const;
 type Operators = typeof Op[keyof typeof Op];
+
+export const WhereOp = {
+  $or: $or,
+  $and: $and,
+} as const;
+type WhereJoinOperators = typeof WhereOp[keyof typeof WhereOp];
 
 type OperandTypeForOperator<O extends Operators, T> = {
   [$eq]: T;
@@ -34,6 +46,13 @@ export type Json =
   | { [prop: string]: Json };
 
 export type Pretty<T> = { [K in keyof T]: T[K] };
+
+type OneKey<Key extends keyof any, Value = any> = {
+  [P in Key]: Record<P, Value> &
+    Partial<Record<Exclude<Key, P>, never>> extends infer O
+    ? { [Q in keyof O]: O[Q] }
+    : never;
+}[Key];
 
 /**
  * @description Convert SQL column string literal type to JavaScript type
@@ -62,7 +81,7 @@ type SupportedTypes = {
   macaddr: 'Not supported yet!';
   macaddr8: 'Not supported yet!';
   money: 'Not supported yet!';
-  numeric: number;
+  numeric: string;
   path: 'Not supported yet!';
   pg_lsn: 'Not supported yet!';
   point: 'Not supported yet!';
@@ -95,6 +114,19 @@ type GetColumnJSType<
   SelectedTable['columns'][SelectedColumn]['type'],
   SelectedTable['columns'][SelectedColumn]['notNull']
 >;
+
+type WhereConditionType<
+  SelectedTable extends Table,
+  ConditionColumn extends keyof SelectedTable['columns'],
+  Operator extends Operators
+> = [
+  ConditionColumn,
+  Operator,
+  OperandTypeForOperator<
+    Operator,
+    GetColumnJSType<SelectedTable, ConditionColumn>
+  >,
+];
 
 /**
  * @description information about column such as if it's nullable, foreign key, autoincrement etc.
@@ -133,6 +165,8 @@ function conditionToSql<SelectedTable extends Table>([
         (value as Array<any>).map((v) => PgSql2.value(v)),
         ',',
       )})`;
+    default:
+      return assertUnreachable(operator);
   }
 }
 
@@ -170,16 +204,17 @@ class SelectQuery<
   ExistingColumns extends keyof SelectedTable['columns'] = never
 > extends Query<SelectedTable, ExistingColumns> {
   private columns: Array<keyof SelectedTable['columns']> | '*' = [];
-  private conditions: Array<
-    [
+  private conditionsData: Array<{
+    whereJoinOperator: WhereJoinOperators;
+    conditions: [
       keyof SelectedTable['columns'],
       Operators,
       OperandTypeForOperator<
         Operators,
         GetColumnJSType<SelectedTable, keyof SelectedTable['columns']>
       >,
-    ]
-  > = [];
+    ][];
+  }> = [];
 
   select<NewColumns extends Array<keyof SelectedTable['columns']> | '*'>(
     columns: NewColumns,
@@ -209,16 +244,111 @@ class SelectQuery<
     ConditionColumn extends keyof SelectedTable['columns'],
     Operator extends Operators
   >(
-    condition: [
-      ConditionColumn,
-      Operator,
-      OperandTypeForOperator<
-        Operator,
-        GetColumnJSType<SelectedTable, ConditionColumn>
-      >,
-    ],
+    conditionsData: OneKey<
+      WhereJoinOperators,
+      [WhereConditionType<SelectedTable, ConditionColumn, Operator>]
+    >,
+  ): SelectQuery<SelectedTable, ExistingColumns>;
+  //#region
+  where<
+    ConditionColumn1 extends keyof SelectedTable['columns'],
+    Operator1 extends Operators,
+    ConditionColumn2 extends keyof SelectedTable['columns'],
+    Operator2 extends Operators
+  >(
+    conditionsData: OneKey<
+      WhereJoinOperators,
+      [
+        WhereConditionType<SelectedTable, ConditionColumn1, Operator1>,
+        WhereConditionType<SelectedTable, ConditionColumn2, Operator2>,
+      ]
+    >,
+  ): SelectQuery<SelectedTable, ExistingColumns>;
+  where<
+    ConditionColumn1 extends keyof SelectedTable['columns'],
+    Operator1 extends Operators,
+    ConditionColumn2 extends keyof SelectedTable['columns'],
+    Operator2 extends Operators,
+    ConditionColumn3 extends keyof SelectedTable['columns'],
+    Operator3 extends Operators
+  >(
+    conditionsData: OneKey<
+      WhereJoinOperators,
+      [
+        WhereConditionType<SelectedTable, ConditionColumn1, Operator1>,
+        WhereConditionType<SelectedTable, ConditionColumn2, Operator2>,
+        WhereConditionType<SelectedTable, ConditionColumn3, Operator3>,
+      ]
+    >,
+  ): SelectQuery<SelectedTable, ExistingColumns>;
+  where<
+    ConditionColumn1 extends keyof SelectedTable['columns'],
+    Operator1 extends Operators,
+    ConditionColumn2 extends keyof SelectedTable['columns'],
+    Operator2 extends Operators,
+    ConditionColumn3 extends keyof SelectedTable['columns'],
+    Operator3 extends Operators,
+    ConditionColumn4 extends keyof SelectedTable['columns'],
+    Operator4 extends Operators
+  >(
+    conditionsData: OneKey<
+      WhereJoinOperators,
+      [
+        WhereConditionType<SelectedTable, ConditionColumn1, Operator1>,
+        WhereConditionType<SelectedTable, ConditionColumn2, Operator2>,
+        WhereConditionType<SelectedTable, ConditionColumn3, Operator3>,
+        WhereConditionType<SelectedTable, ConditionColumn4, Operator4>,
+      ]
+    >,
+  ): SelectQuery<SelectedTable, ExistingColumns>;
+  where<
+    ConditionColumn1 extends keyof SelectedTable['columns'],
+    Operator1 extends Operators,
+    ConditionColumn2 extends keyof SelectedTable['columns'],
+    Operator2 extends Operators,
+    ConditionColumn3 extends keyof SelectedTable['columns'],
+    Operator3 extends Operators,
+    ConditionColumn4 extends keyof SelectedTable['columns'],
+    Operator4 extends Operators,
+    ConditionColumn5 extends keyof SelectedTable['columns'],
+    Operator5 extends Operators
+  >(
+    conditionsData: OneKey<
+      WhereJoinOperators,
+      [
+        WhereConditionType<SelectedTable, ConditionColumn1, Operator1>,
+        WhereConditionType<SelectedTable, ConditionColumn2, Operator2>,
+        WhereConditionType<SelectedTable, ConditionColumn3, Operator3>,
+        WhereConditionType<SelectedTable, ConditionColumn4, Operator4>,
+        WhereConditionType<SelectedTable, ConditionColumn5, Operator5>,
+      ]
+    >,
+  ): SelectQuery<SelectedTable, ExistingColumns>;
+  //#endregion
+  where(
+    conditionsData: OneKey<
+      WhereJoinOperators,
+      Array<
+        WhereConditionType<
+          SelectedTable,
+          keyof SelectedTable['columns'],
+          Operators
+        >
+      >
+    >,
   ): SelectQuery<SelectedTable, ExistingColumns> {
-    this.conditions.push(condition);
+    for (const key of Object.getOwnPropertySymbols(conditionsData) as Array<
+      keyof typeof conditionsData
+    >) {
+      const value = conditionsData[key];
+      if (value) {
+        this.conditionsData.push({
+          whereJoinOperator: key,
+          conditions: value,
+        });
+      }
+    }
+
     return this;
   }
 
@@ -234,12 +364,17 @@ class SelectQuery<
       : PgSql2.raw('*');
 
     const conditions =
-      this.conditions.length > 0
-        ? PgSql2.query`WHERE ${PgSql2.join(
-            this.conditions.map((c) => conditionToSql(c)),
+      this.conditionsData.length < 1
+        ? PgSql2.query``
+        : PgSql2.query`WHERE ${PgSql2.join(
+            this.conditionsData.map((cd) =>
+              PgSql2.join(
+                cd.conditions.map((c) => conditionToSql(c)),
+                cd.whereJoinOperator === WhereOp.$and ? ' AND ' : ' OR ',
+              ),
+            ),
             ') AND (',
-          )}`
-        : PgSql2.query``;
+          )}`;
 
     const query = PgSql2.query`SELECT ${fields} FROM ${from} ${conditions}`;
 

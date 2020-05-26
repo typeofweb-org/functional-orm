@@ -9,7 +9,7 @@ import {
 } from '../generator';
 import Path from 'path';
 import { compileTypeScriptCode } from './tsCompiler';
-import { Gostek, Op } from '../querybuilder/querybuilder';
+import { Gostek, Op, WhereOp } from '../querybuilder/querybuilder';
 import { User } from './generated/models';
 
 describe('unit tests', () => {
@@ -252,7 +252,7 @@ export const User = {
         Gostek.from(User)
           .select(['id'])
           .select('*')
-          .where(['name', Op.$eq, 'Michał'])
+          .where({ [WhereOp.$and]: [['name', Op.$eq, 'Michał']] })
           .getQuery(),
       ).toEqual({
         text: 'SELECT * FROM "user" WHERE "name" = $1',
@@ -262,12 +262,28 @@ export const User = {
       expect(
         Gostek.from(User)
           .select(['id', 'name'])
-          .where(['id', Op.$in, [1, 2, 3]])
+          .where({ [WhereOp.$and]: [['id', Op.$in, [1, 2, 3]]] })
           .getQuery(),
       ).toEqual({
         text:
           'SELECT "user"."id", "user"."name" FROM "user" WHERE "id" in ($1,$2,$3)',
         values: [1, 2, 3],
+      });
+
+      expect(
+        Gostek.from(User)
+          .select(['id', 'name'])
+          .where({
+            [WhereOp.$and]: [
+              ['id', Op.$in, [1, 2, 3]],
+              ['name', Op.$eq, 'Kasia'],
+            ],
+          })
+          .getQuery(),
+      ).toEqual({
+        text:
+          'SELECT "user"."id", "user"."name" FROM "user" WHERE "id" in ($1,$2,$3) AND "name" = $4',
+        values: [1, 2, 3, 'Kasia'],
       });
     });
 
@@ -293,7 +309,7 @@ export const User = {
         int2Column: 2,
         int4Column: 11,
         int8Column: 10n,
-        numericColumn: 50.5,
+        numericColumn: '50.5',
         jsonbColumn: {
           some: 'value',
           is: 1,
@@ -337,7 +353,7 @@ export const User = {
         int2Column: null,
         int4Column: 11,
         int8Column: null,
-        numericColumn: 50.5,
+        numericColumn: '50.5',
         jsonbColumn: {
           some: 'value',
           is: 1,
@@ -357,7 +373,6 @@ export const User = {
       expect(results[0]).toEqual({
         ...userObject,
         dateColumn: nowWithoutTimezoneDatePrecision,
-        numericColumn: '50.5',
       });
     });
 
@@ -413,6 +428,8 @@ export const User = {
         varcharColumn: '',
       };
 
+      Gostek.to(User).insertOne(one);
+
       await db.none(`INSERT INTO "user" VALUES (
         1,
         'michal@typeofweb.com',
@@ -457,25 +474,95 @@ export const User = {
         two,
       ]);
 
-      expect(await Gostek.from(User).select(['id']).execute(db)).toEqual([
-        { id: one.id },
-        { id: two.id },
-      ]);
+      expect(await Gostek.from(User).select(['id']).execute(db)).toContainEqual(
+        {
+          id: expect.toBeNumber(),
+        },
+      );
 
       expect(
         await Gostek.from(User)
           .select(['id'])
           .select('*')
-          .where(['name', Op.$eq, 'Michał'])
+          .where({ [WhereOp.$and]: [['name', Op.$eq, 'Michał']] })
           .execute(db),
-      ).toEqual([one]);
+      ).toSatisfyAll((el) => {
+        expect(el).toMatchObject({
+          id: expect.toBeNumber(),
+          name: 'Michał',
+        });
+        return true;
+      });
 
       expect(
         await Gostek.from(User)
           .select(['id', 'name'])
-          .where(['id', Op.$in, [1, 2, 3]])
+          .where({ [WhereOp.$and]: [['id', Op.$in, [1, 2, 3]]] })
           .execute(db),
-      ).toEqual([{ id: one.id, name: one.name }]);
+      ).toSatisfyAll((el) => {
+        expect(el).toEqual({
+          id: expect.toBeOneOf([1, 2, 3]),
+          name: expect.toBeString(),
+        });
+        return true;
+      });
+
+      expect(
+        await Gostek.from(User)
+          .select(['id', 'name'])
+          .where({
+            [WhereOp.$and]: [
+              ['id', Op.$in, [1, 2, 3]],
+              ['name', Op.$eq, 'Michał'],
+            ],
+          })
+          .execute(db),
+      ).toSatisfyAll((el) => {
+        expect(el).toEqual({
+          id: expect.toBeOneOf([1, 2, 3]),
+          name: 'Michał',
+        });
+        return true;
+      });
+
+      expect(
+        await Gostek.from(User)
+          .select(['id', 'name'])
+          .where({
+            [WhereOp.$or]: [
+              ['id', Op.$in, [1, 2, 3]],
+              ['name', Op.$eq, 'Michal'],
+            ],
+          })
+          .execute(db),
+      ).toSatisfyAll((el) => {
+        expect(el).toBeOneOf([
+          {
+            id: expect.toBeOneOf([1, 2, 3]),
+            name: expect.toBeString(),
+          },
+          {
+            id: expect.toBeNumber(),
+            name: 'Michał',
+          },
+        ]);
+        return true;
+      });
+
+      expect(
+        await Gostek.from(User)
+          .select(['id', 'name'])
+          .where({
+            [WhereOp.$or]: [
+              ['name', Op.$eq, 'Michał'],
+              ['name', Op.$eq, 'Kasia'],
+            ],
+          })
+          .execute(db),
+      ).toEqual([
+        { id: one.id, name: one.name },
+        { id: two.id, name: two.name },
+      ]);
     });
   });
 });

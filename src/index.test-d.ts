@@ -1,4 +1,4 @@
-import { Gostek, Op } from './querybuilder/querybuilder';
+import { Gostek, Op, WhereOp } from './querybuilder/querybuilder';
 // tslint:disable:no-magic-numbers
 
 const User = {
@@ -12,39 +12,56 @@ const User = {
 } as const;
 
 async () => {
-  // $ExpectError
+  // @ts-expect-error
   Gostek.from(User).select('foo');
 
-  // $ExpectError
-  Gostek.from(User).select('*').where(['id', Op.$eq, null]);
-
-  // $ExpectError
-  Gostek.from(User).select(['id']).where(['id', Op.$in, null]);
-
-  // $ExpectError
-  Gostek.to(User).select();
-
-  // $ExpectError
-  Gostek.to(User).insertOne();
-
-  // $ExpectError
-  Gostek.to(User).insertOne({ notExisting: 'field' });
-
-  // $ExpectError
-  Gostek.to(User).insertOne({ name: 1 });
-
-  // $ExpectError
-  Gostek.from(User).select(['userData']).where(['userData', Op.$eq, undefined]);
+  Gostek.from(User)
+    .select('*')
+    // @ts-expect-error
+    .where({ [WhereOp.$and]: [['id', Op.$eq, null]] });
 
   Gostek.from(User)
     .select(['id'])
-    // $ExpectError
-    .where(['id', Op.$in, ['a', 'b', 'c']]);
+    // @ts-expect-error
+    .where({ [WhereOp.$and]: [['id', Op.$in, null]] });
+
+  // @ts-expect-error
+  Gostek.to(User).select();
+
+  // @ts-expect-error
+  Gostek.to(User).insertOne();
+
+  // @ts-expect-error
+  Gostek.to(User).insertOne({ notExisting: 'field' });
+
+  // @ts-expect-error
+  Gostek.to(User).insertOne({ name: 1 });
+
+  Gostek.from(User)
+    .select(['userData'])
+    // @ts-expect-error
+    .where({ [WhereOp.$and]: [['userData', Op.$eq, undefined]] });
+
+  Gostek.from(User)
+    .select(['userData'])
+    .where({
+      // @ts-expect-error
+      [WhereOp.$and]: [['name', Op.$eq, 'name']],
+      // @ts-expect-error
+      [WhereOp.$or]: [['name', Op.$eq, 'name']],
+    });
+
+  Gostek.from(User)
+    .select(['id'])
+    .where({
+      // @ts-expect-error
+      [WhereOp.$and]: [['id', Op.$in, ['a', 'b', 'c']]],
+    });
 
   // $ExpectType { readonly name: string | null; }[]
   await Gostek.from(User)
     .select(['name'])
-    .where(['id', Op.$in, [1, 2, 3]])
+    .where({ [WhereOp.$and]: [['id', Op.$in, [1, 2, 3]]] })
     .execute({} as any);
 
   // $ExpectType { readonly id: number; readonly name: string | null; readonly userData: Json; readonly int8Column: BigInt; }[]

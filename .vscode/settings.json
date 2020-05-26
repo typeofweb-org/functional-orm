@@ -3,5 +3,6 @@
   "tslint.run": "onSave",
   "tslint.autoFixOnSave": true,
   "prettier.semi": true,
-  "prettier.trailingComma": "all"
+  "prettier.trailingComma": "all",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
