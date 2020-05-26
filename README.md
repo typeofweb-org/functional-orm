@@ -1,7 +1,8 @@
 # Gostek
 
-![CI](https://github.com/typeofweb/functional-orm/workflows/CI/badge.svg?branch=master)
-[![Greenkeeper badge](https://flat.badgen.net/dependabot/typeofweb/functional-orm?icon=dependabot)](https://dependabot.com/)
+[![Build](https://github.com/typeofweb/functional-orm/workflows/Build/badge.svg?branch=master)](https://github.com/typeofweb/functional-orm/actions)
+[![Greenkeeper badge](https://badgen.net/dependabot/typeofweb/functional-orm?icon=dependabot)](https://dependabot.com/)
+
 
 Gostek is a **completely typesafe querybuilder** written in TypeScript
 
