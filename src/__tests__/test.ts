@@ -309,7 +309,7 @@ export const User = {
         int2Column: 2,
         int4Column: 11,
         int8Column: 10n,
-        numericColumn: 50.5,
+        numericColumn: '50.5',
         jsonbColumn: {
           some: 'value',
           is: 1,
@@ -353,7 +353,7 @@ export const User = {
         int2Column: null,
         int4Column: 11,
         int8Column: null,
-        numericColumn: 50.5,
+        numericColumn: '50.5',
         jsonbColumn: {
           some: 'value',
           is: 1,
@@ -373,7 +373,6 @@ export const User = {
       expect(results[0]).toEqual({
         ...userObject,
         dateColumn: nowWithoutTimezoneDatePrecision,
-        numericColumn: '50.5',
       });
     });
 
@@ -429,6 +428,8 @@ export const User = {
         varcharColumn: '',
       };
 
+      Gostek.to(User).insertOne(one);
+
       await db.none(`INSERT INTO "user" VALUES (
         1,
         'michal@typeofweb.com',
@@ -473,10 +474,11 @@ export const User = {
         two,
       ]);
 
-      expect(await Gostek.from(User).select(['id']).execute(db)).toEqual([
-        { id: one.id },
-        { id: two.id },
-      ]);
+      expect(await Gostek.from(User).select(['id']).execute(db)).toContainEqual(
+        {
+          id: expect.toBeNumber(),
+        },
+      );
 
       expect(
         await Gostek.from(User)
@@ -484,14 +486,26 @@ export const User = {
           .select('*')
           .where({ [WhereOp.$and]: [['name', Op.$eq, 'Michał']] })
           .execute(db),
-      ).toEqual([one]);
+      ).toSatisfyAll((el) => {
+        expect(el).toMatchObject({
+          id: expect.toBeNumber(),
+          name: 'Michał',
+        });
+        return true;
+      });
 
       expect(
         await Gostek.from(User)
           .select(['id', 'name'])
           .where({ [WhereOp.$and]: [['id', Op.$in, [1, 2, 3]]] })
           .execute(db),
-      ).toEqual([{ id: one.id, name: one.name }]);
+      ).toSatisfyAll((el) => {
+        expect(el).toEqual({
+          id: expect.toBeOneOf([1, 2, 3]),
+          name: expect.toBeString(),
+        });
+        return true;
+      });
 
       expect(
         await Gostek.from(User)
@@ -503,7 +517,13 @@ export const User = {
             ],
           })
           .execute(db),
-      ).toEqual([{ id: one.id, name: one.name }]);
+      ).toSatisfyAll((el) => {
+        expect(el).toEqual({
+          id: expect.toBeOneOf([1, 2, 3]),
+          name: 'Michał',
+        });
+        return true;
+      });
 
       expect(
         await Gostek.from(User)
@@ -511,11 +531,23 @@ export const User = {
           .where({
             [WhereOp.$or]: [
               ['id', Op.$in, [1, 2, 3]],
-              ['name', Op.$eq, 1],
+              ['name', Op.$eq, 'Michal'],
             ],
           })
           .execute(db),
-      ).toEqual([{ id: one.id, name: one.name }]);
+      ).toSatisfyAll((el) => {
+        expect(el).toBeOneOf([
+          {
+            id: expect.toBeOneOf([1, 2, 3]),
+            name: expect.toBeString(),
+          },
+          {
+            id: expect.toBeNumber(),
+            name: 'Michał',
+          },
+        ]);
+        return true;
+      });
 
       expect(
         await Gostek.from(User)

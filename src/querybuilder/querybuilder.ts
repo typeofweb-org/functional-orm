@@ -2,12 +2,16 @@ import { ColumnType } from '../generator/types';
 const $eq = Symbol('$eq');
 const $neq = Symbol('$neq');
 const $in = Symbol('$in');
-const $or = '$or';
-const $and = '$and';
+const $or = Symbol('$or');
+const $and = Symbol('$and');
 
 import * as PgSql2 from 'pg-sql2';
 import { QueryConfig } from 'pg';
 import { IDatabase } from 'pg-promise';
+
+function assertUnreachable(x: never): never {
+  throw new Error(x);
+}
 
 export const Op = {
   $eq: $eq,
@@ -43,7 +47,7 @@ export type Json =
 
 export type Pretty<T> = { [K in keyof T]: T[K] };
 
-type OneKey<Key extends string, Value = any> = {
+type OneKey<Key extends keyof any, Value = any> = {
   [P in Key]: Record<P, Value> &
     Partial<Record<Exclude<Key, P>, never>> extends infer O
     ? { [Q in keyof O]: O[Q] }
@@ -77,7 +81,7 @@ type SupportedTypes = {
   macaddr: 'Not supported yet!';
   macaddr8: 'Not supported yet!';
   money: 'Not supported yet!';
-  numeric: number;
+  numeric: string;
   path: 'Not supported yet!';
   pg_lsn: 'Not supported yet!';
   point: 'Not supported yet!';
@@ -162,8 +166,7 @@ function conditionToSql<SelectedTable extends Table>([
         ',',
       )})`;
     default:
-      const _: never = operator;
-      return PgSql2.query``;
+      return assertUnreachable(operator);
   }
 }
 
@@ -322,12 +325,26 @@ class SelectQuery<
     >,
   ): SelectQuery<SelectedTable, ExistingColumns>;
   //#endregion
-  where(conditionsData: any): SelectQuery<SelectedTable, ExistingColumns> {
-    for (const [key, value] of Object.entries(conditionsData)) {
+  where(
+    conditionsData: OneKey<
+      WhereJoinOperators,
+      Array<
+        WhereConditionType<
+          SelectedTable,
+          keyof SelectedTable['columns'],
+          Operators
+        >
+      >
+    >,
+  ): SelectQuery<SelectedTable, ExistingColumns> {
+    for (const key of Object.getOwnPropertySymbols(conditionsData) as Array<
+      keyof typeof conditionsData
+    >) {
+      const value = conditionsData[key];
       if (value) {
         this.conditionsData.push({
-          whereJoinOperator: (key as unknown) as WhereJoinOperators,
-          conditions: value as any,
+          whereJoinOperator: key,
+          conditions: value,
         });
       }
     }
