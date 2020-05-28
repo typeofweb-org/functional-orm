@@ -71,14 +71,13 @@ describe('unit tests', () => {
             name: { type: 'text', notNull: false },
           },
         }),
-      ).toEqual(
-        `
-export const User = {
-  name: 'user',
-  columns: { id: { type: 'int4', notNull: true }, name: { type: 'text', notNull: false } },
-} as const;
-`.trimStart(),
-      );
+      ).toMatchInlineSnapshot(`
+        "export const User = {
+          name: 'user',
+          columns: { id: { type: 'int4', notNull: true }, name: { type: 'text', notNull: false } },
+        } as const;
+        "
+      `);
     });
 
     it('should allow passing formatting options to meet your style', () => {
@@ -93,23 +92,22 @@ export const User = {
           },
           { printWidth: 30 },
         ),
-      ).toEqual(
-        `
-export const User = {
-  name: 'user',
-  columns: {
-    id: {
-      type: 'int4',
-      notNull: true,
-    },
-    name: {
-      type: 'text',
-      notNull: false,
-    },
-  },
-} as const;
-`.trimStart(),
-      );
+      ).toMatchInlineSnapshot(`
+        "export const User = {
+          name: 'user',
+          columns: {
+            id: {
+              type: 'int4',
+              notNull: true,
+            },
+            name: {
+              type: 'text',
+              notNull: false,
+            },
+          },
+        } as const;
+        "
+      `);
     });
   });
 });
@@ -145,91 +143,140 @@ describe('integration tests', () => {
       const userSchema = result.find((i) => i.tableName === 'user');
       expect(userSchema).toBeDefined();
 
-      expect(userSchema!.schema).toEqual([
-        { column_name: 'id', is_nullable: 'NO', udt_name: 'int4' },
-        { column_name: 'email', is_nullable: 'NO', udt_name: 'text' },
-        { column_name: 'name', is_nullable: 'YES', udt_name: 'text' },
-        { column_name: 'boolColumn', is_nullable: 'NO', udt_name: 'bool' },
-        { column_name: 'charColumn', is_nullable: 'YES', udt_name: 'bpchar' },
-        { column_name: 'dateColumn', is_nullable: 'YES', udt_name: 'date' },
-        { column_name: 'float4Column', is_nullable: 'YES', udt_name: 'float4' },
-        { column_name: 'float8Column', is_nullable: 'NO', udt_name: 'float8' },
-        { column_name: 'int2Column', is_nullable: 'YES', udt_name: 'int2' },
-        { column_name: 'int4Column', is_nullable: 'NO', udt_name: 'int4' },
-        { column_name: 'int8Column', is_nullable: 'YES', udt_name: 'int8' },
-        {
-          column_name: 'numericColumn',
-          is_nullable: 'NO',
-          udt_name: 'numeric',
-        },
-        {
-          column_name: 'jsonbColumn',
-          is_nullable: 'NO',
-          udt_name: 'jsonb',
-        },
-        { column_name: 'textColumn', is_nullable: 'YES', udt_name: 'text' },
-        {
-          column_name: 'timestampColumn',
-          is_nullable: 'NO',
-          udt_name: 'timestamp',
-        },
-        {
-          column_name: 'timestamptzColumn',
-          is_nullable: 'YES',
-          udt_name: 'timestamptz',
-        },
-        {
-          column_name: 'varcharColumn',
-          is_nullable: 'NO',
-          udt_name: 'varchar',
-        },
-      ]);
+      expect(userSchema!.schema).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "column_name": "id",
+            "is_nullable": "NO",
+            "udt_name": "int4",
+          },
+          Object {
+            "column_name": "email",
+            "is_nullable": "NO",
+            "udt_name": "text",
+          },
+          Object {
+            "column_name": "name",
+            "is_nullable": "YES",
+            "udt_name": "text",
+          },
+          Object {
+            "column_name": "boolColumn",
+            "is_nullable": "NO",
+            "udt_name": "bool",
+          },
+          Object {
+            "column_name": "charColumn",
+            "is_nullable": "YES",
+            "udt_name": "bpchar",
+          },
+          Object {
+            "column_name": "dateColumn",
+            "is_nullable": "YES",
+            "udt_name": "date",
+          },
+          Object {
+            "column_name": "float4Column",
+            "is_nullable": "YES",
+            "udt_name": "float4",
+          },
+          Object {
+            "column_name": "float8Column",
+            "is_nullable": "NO",
+            "udt_name": "float8",
+          },
+          Object {
+            "column_name": "int2Column",
+            "is_nullable": "YES",
+            "udt_name": "int2",
+          },
+          Object {
+            "column_name": "int4Column",
+            "is_nullable": "NO",
+            "udt_name": "int4",
+          },
+          Object {
+            "column_name": "int8Column",
+            "is_nullable": "YES",
+            "udt_name": "int8",
+          },
+          Object {
+            "column_name": "numericColumn",
+            "is_nullable": "NO",
+            "udt_name": "numeric",
+          },
+          Object {
+            "column_name": "jsonbColumn",
+            "is_nullable": "NO",
+            "udt_name": "jsonb",
+          },
+          Object {
+            "column_name": "textColumn",
+            "is_nullable": "YES",
+            "udt_name": "text",
+          },
+          Object {
+            "column_name": "timestampColumn",
+            "is_nullable": "NO",
+            "udt_name": "timestamp",
+          },
+          Object {
+            "column_name": "timestamptzColumn",
+            "is_nullable": "YES",
+            "udt_name": "timestamptz",
+          },
+          Object {
+            "column_name": "varcharColumn",
+            "is_nullable": "NO",
+            "udt_name": "varchar",
+          },
+        ]
+      `);
     });
 
     it('generates valid TS code for all schemas', async () => {
       const code = await generateTSCodeForAllSchemas(db);
 
-      expect(code).toEqual(
-        `
-/**
- * AUTOMATICALLY GENERATED
- * DO NOT MODIFY
- * ANY CHANGES WILL BE OVERWRITTEN
- */
+      expect(code).toMatchInlineSnapshot(`
+        "/**
+         * AUTOMATICALLY GENERATED
+         * DO NOT MODIFY
+         * ANY CHANGES WILL BE OVERWRITTEN
+         */
 
-export const Invoice = {
-  name: 'invoice',
-  columns: {
-    id: { type: 'int4', notNull: true },
-    value: { type: 'float4', notNull: true },
-    addedAt: { type: 'date', notNull: true },
-  },
-} as const;
+        export const Invoice = {
+          name: 'invoice',
+          columns: {
+            id: { type: 'int4', notNull: true },
+            value: { type: 'float4', notNull: true },
+            addedAt: { type: 'date', notNull: true },
+          },
+        } as const;
 
-export const User = {
-  name: 'user',
-  columns: {
-    id: { type: 'int4', notNull: true },
-    email: { type: 'text', notNull: true },
-    name: { type: 'text', notNull: false },
-    boolColumn: { type: 'bool', notNull: true },
-    charColumn: { type: 'bpchar', notNull: false },
-    dateColumn: { type: 'date', notNull: false },
-    float4Column: { type: 'float4', notNull: false },
-    float8Column: { type: 'float8', notNull: true },
-    int2Column: { type: 'int2', notNull: false },
-    int4Column: { type: 'int4', notNull: true },
-    int8Column: { type: 'int8', notNull: false },
-    numericColumn: { type: 'numeric', notNull: true },
-    jsonbColumn: { type: 'jsonb', notNull: true },
-    textColumn: { type: 'text', notNull: false },
-    timestampColumn: { type: 'timestamp', notNull: true },
-    timestamptzColumn: { type: 'timestamptz', notNull: false },
-    varcharColumn: { type: 'varchar', notNull: true },
-  },
-} as const;
-`.trimLeft(),
-      );
+        export const User = {
+          name: 'user',
+          columns: {
+            id: { type: 'int4', notNull: true },
+            email: { type: 'text', notNull: true },
+            name: { type: 'text', notNull: false },
+            boolColumn: { type: 'bool', notNull: true },
+            charColumn: { type: 'bpchar', notNull: false },
+            dateColumn: { type: 'date', notNull: false },
+            float4Column: { type: 'float4', notNull: false },
+            float8Column: { type: 'float8', notNull: true },
+            int2Column: { type: 'int2', notNull: false },
+            int4Column: { type: 'int4', notNull: true },
+            int8Column: { type: 'int8', notNull: false },
+            numericColumn: { type: 'numeric', notNull: true },
+            jsonbColumn: { type: 'jsonb', notNull: true },
+            textColumn: { type: 'text', notNull: false },
+            timestampColumn: { type: 'timestamp', notNull: true },
+            timestamptzColumn: { type: 'timestamptz', notNull: false },
+            varcharColumn: { type: 'varchar', notNull: true },
+          },
+        } as const;
+        "
+      `);
 
       const compiled = compileTypeScriptCode(code);
       expect(compiled.errors).toHaveLength(0);
@@ -238,15 +285,20 @@ export const User = {
 
   describe('querybuilder', () => {
     it('builds queries', () => {
-      expect(Gostek.from(User).select('*').getQuery()).toEqual({
-        text: 'SELECT * FROM "user" ',
-        values: [],
-      });
+      expect(Gostek.from(User).select('*').getQuery()).toMatchInlineSnapshot(`
+        Object {
+          "text": "SELECT * FROM \\"user\\" ",
+          "values": Array [],
+        }
+      `);
 
-      expect(Gostek.from(User).select(['id']).getQuery()).toEqual({
-        text: 'SELECT "user"."id" FROM "user" ',
-        values: [],
-      });
+      expect(Gostek.from(User).select(['id']).getQuery())
+        .toMatchInlineSnapshot(`
+        Object {
+          "text": "SELECT \\"user\\".\\"id\\" FROM \\"user\\" ",
+          "values": Array [],
+        }
+      `);
 
       expect(
         Gostek.from(User)
@@ -254,21 +306,30 @@ export const User = {
           .select('*')
           .where({ [WhereOp.$and]: [['name', Op.$eq, 'Michał']] })
           .getQuery(),
-      ).toEqual({
-        text: 'SELECT * FROM "user" WHERE "name" = $1',
-        values: ['Michał'],
-      });
+      ).toMatchInlineSnapshot(`
+        Object {
+          "text": "SELECT * FROM \\"user\\" WHERE \\"name\\" = $1",
+          "values": Array [
+            "Michał",
+          ],
+        }
+      `);
 
       expect(
         Gostek.from(User)
           .select(['id', 'name'])
           .where({ [WhereOp.$and]: [['id', Op.$in, [1, 2, 3]]] })
           .getQuery(),
-      ).toEqual({
-        text:
-          'SELECT "user"."id", "user"."name" FROM "user" WHERE "id" in ($1,$2,$3)',
-        values: [1, 2, 3],
-      });
+      ).toMatchInlineSnapshot(`
+        Object {
+          "text": "SELECT \\"user\\".\\"id\\", \\"user\\".\\"name\\" FROM \\"user\\" WHERE \\"id\\" in ($1,$2,$3)",
+          "values": Array [
+            1,
+            2,
+            3,
+          ],
+        }
+      `);
 
       expect(
         Gostek.from(User)
@@ -280,11 +341,17 @@ export const User = {
             ],
           })
           .getQuery(),
-      ).toEqual({
-        text:
-          'SELECT "user"."id", "user"."name" FROM "user" WHERE "id" in ($1,$2,$3) AND "name" = $4',
-        values: [1, 2, 3, 'Kasia'],
-      });
+      ).toMatchInlineSnapshot(`
+        Object {
+          "text": "SELECT \\"user\\".\\"id\\", \\"user\\".\\"name\\" FROM \\"user\\" WHERE \\"id\\" in ($1,$2,$3) AND \\"name\\" = $4",
+          "values": Array [
+            1,
+            2,
+            3,
+            "Kasia",
+          ],
+        }
+      `);
     });
 
     it('can insert a full new entity to database', async () => {
