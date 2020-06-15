@@ -33,7 +33,7 @@
     "husky": "4.2.5",
     "jest": "25.5.4",
     "jest-extended": "0.11.5",
-    "lint-staged": "10.2.9",
+    "lint-staged": "10.2.10",
     "pg-sql2": "4.7.0",
     "ts-jest": "25.5.1",
     "typescript": "3.9.5"
