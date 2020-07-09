@@ -41,7 +41,7 @@
   "dependencies": {
     "@types/lodash": "4.14.157",
     "app-root-path": "3.0.0",
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "pg-promise": "10.5.8",
     "prettier": "2.0.5",
     "ts-morph": "7.1.2"
