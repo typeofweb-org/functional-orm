@@ -3793,13 +3793,13 @@ pg-pool@^3.2.1:
   resolved "https://registry.yarnpkg.com/pg-pool/-/pg-pool-3.2.1.tgz#5f4afc0f58063659aeefa952d36af49fa28b30e0"
   integrity sha512-BQDPWUeKenVrMMDN9opfns/kZo4lxmSWhIqo+cSAF7+lfi9ZclQbr9vfnlNaPr8wYF3UYjm5X0yPAhbcgqNOdA==
 
-pg-promise@10.6.0:
-  version "10.6.0"
-  resolved "https://registry.yarnpkg.com/pg-promise/-/pg-promise-10.6.0.tgz#c7fc0641a474123954e1f86664fb1656c49236f9"
-  integrity sha512-OEj/jX+6fgMalh9u+RM/zgbecnfSWm+oR6jMmSWMJQK+vkh68olFI+jqBLLXS8v+Y5LZkvUiiOyVe90x9mg16g==
+pg-promise@10.6.1:
+  version "10.6.1"
+  resolved "https://registry.yarnpkg.com/pg-promise/-/pg-promise-10.6.1.tgz#29fe3e3178958cb7e44b2855d5101be90b2f3ba3"
+  integrity sha512-Ahde0/04RmEPwryMcDV8ya4XXjfNWD44EuckgFPFQOIX/3smZS2ygeSXPEy4DmDxoSkSF6Y6vK8Bc4fN+bYMxg==
   dependencies:
     assert-options "0.6.2"
-    pg "8.3.2"
+    pg "8.3.3"
     pg-minify "1.6.1"
     spex "3.0.2"
 
@@ -3829,10 +3829,10 @@ pg-types@^2.1.0:
     postgres-date "~1.0.4"
     postgres-interval "^1.1.0"
 
-pg@8.3.2:
-  version "8.3.2"
-  resolved "https://registry.yarnpkg.com/pg/-/pg-8.3.2.tgz#52766e41302f5b878fe1efa10d4cdd486f6dff50"
-  integrity sha512-hOoRCTriXS+VWwyXHchRjWb9yv3Koq8irlwwXniqhdgK0AbfWvEnybGS2HIUE+UdCSTuYAM4WGPujFpPg9Vcaw==
+pg@8.3.3:
+  version "8.3.3"
+  resolved "https://registry.yarnpkg.com/pg/-/pg-8.3.3.tgz#0338631ca3c39b4fb425b699d494cab17f5bb7eb"
+  integrity sha512-wmUyoQM/Xzmo62wgOdQAn5tl7u+IA1ZYK7qbuppi+3E+Gj4hlUxVHjInulieWrd0SfHi/ADriTb5ILJ/lsJrSg==
   dependencies:
     buffer-writer "2.0.0"
     packet-reader "1.0.0"
