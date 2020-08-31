@@ -39,7 +39,7 @@
     "typescript": "3.9.7"
   },
   "dependencies": {
-    "@types/lodash": "4.14.160",
+    "@types/lodash": "4.14.161",
     "app-root-path": "3.0.0",
     "lodash": "4.17.20",
     "pg-promise": "10.6.1",
