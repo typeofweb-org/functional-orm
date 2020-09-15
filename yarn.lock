@@ -395,12 +395,12 @@
     is-absolute "^1.0.0"
     is-negated-glob "^1.0.0"
 
-"@graphile/lru@4.8.0-rc.0":
-  version "4.8.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@graphile/lru/-/lru-4.8.0-rc.0.tgz#37af487cfe6081c85aff997d16f722bfe8309172"
-  integrity sha512-/8a8qBItKbpoDkoiUcNPiLcn91wAniDA23ZsxTxoC51YD/FORF0znsISL19XGqw5Iq5b0jlFbDIpgtN0fQEbqQ==
+"@graphile/lru@4.9.0":
+  version "4.9.0"
+  resolved "https://registry.yarnpkg.com/@graphile/lru/-/lru-4.9.0.tgz#f101cbaaaf8a0ae6cb661e8cdc579a11c253cc10"
+  integrity sha512-VAIFIwTVShUaeXKKEErO5+m12+s6GG/6ZwqyM8eilbz/XGypKBhBFbljoidABMwJdmvfGve+gYK8V0dvzS38tQ==
   dependencies:
-    tslib "^1.13.0"
+    tslib "^2.0.1"
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.0.0"
@@ -3790,15 +3790,15 @@ pg-protocol@^1.2.5:
   resolved "https://registry.yarnpkg.com/pg-protocol/-/pg-protocol-1.2.5.tgz#28a1492cde11646ff2d2d06bdee42a3ba05f126c"
   integrity sha512-1uYCckkuTfzz/FCefvavRywkowa6M5FohNMF5OjKrqo9PSR8gYc8poVmwwYQaBxhmQdBjhtP514eXy9/Us2xKg==
 
-pg-sql2@4.8.0:
-  version "4.8.0"
-  resolved "https://registry.yarnpkg.com/pg-sql2/-/pg-sql2-4.8.0.tgz#36c8e863b600e406f1482a6afda369c7e82e4113"
-  integrity sha512-lMqds7zZ9K7Y/UFQjRuoDSlE0Zq3Mlw06b9zW4Vy5x/MnZbqxwDGwgPlGC15Fx21Mn8aWgXVmqNf1SAu0Geb3A==
+pg-sql2@4.9.0:
+  version "4.9.0"
+  resolved "https://registry.yarnpkg.com/pg-sql2/-/pg-sql2-4.9.0.tgz#e46d4267192af69ac861e38e64b0df9632b1169c"
+  integrity sha512-buNlFvR1Sq/7UY90CnxfKHcs21/J6CyN+iqAxFHy1Ppbc4uUSIdqwIEhB4y19yBsrqcIMa+pt0i+wJ0ecm4aXg==
   dependencies:
-    "@graphile/lru" "4.8.0-rc.0"
+    "@graphile/lru" "4.9.0"
     "@types/pg" ">=6 <8"
     debug ">=3 <5"
-    tslib "^1.13.0"
+    tslib "^2.0.1"
 
 pg-types@^2.1.0:
   version "2.2.0"
@@ -4773,10 +4773,15 @@ ts-toolbelt@^6.3.3:
   resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-6.3.13.tgz#6e5bded5d064004a187abe9006dca69100517a01"
   integrity sha512-wC3SxZTo4bPsVaNOcg4GGI1t9kIvlDUE6qkdV5r1Mq2E046hX/EdS6m+l2MCzDy8qHALIZDmMRZcti6WKlLIhA==
 
-tslib@^1.13.0, tslib@^1.8.1, tslib@^1.9.0:
+tslib@^1.8.1, tslib@^1.9.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.13.0.tgz#c881e13cc7015894ed914862d276436fa9a47043"
   integrity sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==
+
+tslib@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.0.1.tgz#410eb0d113e5b6356490eec749603725b021b43e"
+  integrity sha512-SgIkNheinmEBgx1IUNirK0TUD4X9yjjBRTqqjggWCU3pUEqIk3/Uwl3yRixYKT6WjQuGiwDv4NomL3wqRCj+CQ==
 
 tsutils@^3.17.1:
   version "3.17.1"
