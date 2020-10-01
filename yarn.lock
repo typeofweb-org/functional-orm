@@ -3775,10 +3775,10 @@ pg-pool@^3.2.1:
   resolved "https://registry.yarnpkg.com/pg-pool/-/pg-pool-3.2.1.tgz#5f4afc0f58063659aeefa952d36af49fa28b30e0"
   integrity sha512-BQDPWUeKenVrMMDN9opfns/kZo4lxmSWhIqo+cSAF7+lfi9ZclQbr9vfnlNaPr8wYF3UYjm5X0yPAhbcgqNOdA==
 
-pg-promise@10.6.1:
-  version "10.6.1"
-  resolved "https://registry.yarnpkg.com/pg-promise/-/pg-promise-10.6.1.tgz#29fe3e3178958cb7e44b2855d5101be90b2f3ba3"
-  integrity sha512-Ahde0/04RmEPwryMcDV8ya4XXjfNWD44EuckgFPFQOIX/3smZS2ygeSXPEy4DmDxoSkSF6Y6vK8Bc4fN+bYMxg==
+pg-promise@10.6.2:
+  version "10.6.2"
+  resolved "https://registry.yarnpkg.com/pg-promise/-/pg-promise-10.6.2.tgz#6f8ecd9d5c4a083a725174d55ba743e7f7da85c0"
+  integrity sha512-MrS7JatbX3cBsL5hjojkdcUggV+514Owkx+LJfrKS2STAt1MAQAGmBLDQVglrKmFA5Yus8ZKPKsQaXEJcU5MdA==
   dependencies:
     assert-options "0.6.2"
     pg "8.3.3"
