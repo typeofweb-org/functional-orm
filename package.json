@@ -44,7 +44,7 @@
     "lodash": "4.17.20",
     "pg-promise": "10.7.3",
     "prettier": "2.1.2",
-    "ts-morph": "7.3.0"
+    "ts-morph": "8.1.2"
   },
   "husky": {
     "hooks": {
