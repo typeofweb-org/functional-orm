@@ -787,18 +787,14 @@
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
   integrity sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==
 
-"@types/pg-types@*":
-  version "1.11.5"
-  resolved "https://registry.yarnpkg.com/@types/pg-types/-/pg-types-1.11.5.tgz#1eebbe62b6772fcc75c18957a90f933d155e005b"
-  integrity sha512-L8ogeT6vDzT1vxlW3KITTCt+BVXXVkLXfZ/XNm6UqbcJgxf+KPO7yjWx7dQQE8RW07KopL10x2gNMs41+IkMGQ==
-
-"@types/pg@>=6 <8":
-  version "7.14.3"
-  resolved "https://registry.yarnpkg.com/@types/pg/-/pg-7.14.3.tgz#eb166e4f4287923890b10ed20371f937938cb995"
-  integrity sha512-go5zddQ1FrUQHeBvqPzQ1svKo4KKucSwvqLsvwc/EIuQ9sxDA21b68xc/RwhzAK5pPCnez8NrkYatFIGdJBVvA==
+"@types/pg@>=6 <9":
+  version "8.6.0"
+  resolved "https://registry.yarnpkg.com/@types/pg/-/pg-8.6.0.tgz#34233b891a127d6caaad28e177b1baec1a2958d4"
+  integrity sha512-3JXFrsl8COoqVB1+2Pqelx6soaiFVXzkT3fkuSNe7GB40ysfT0FHphZFPiqIXpMyTHSFRdLTyZzrFBrJRPAArA==
   dependencies:
     "@types/node" "*"
-    "@types/pg-types" "*"
+    pg-protocol "*"
+    pg-types "^2.2.0"
 
 "@types/prettier@^1.19.0":
   version "1.19.1"
@@ -3828,22 +3824,22 @@ pg-promise@10.10.2:
     pg-minify "1.6.2"
     spex "3.2.0"
 
-pg-protocol@^1.5.0:
+pg-protocol@*, pg-protocol@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/pg-protocol/-/pg-protocol-1.5.0.tgz#b5dd452257314565e2d54ab3c132adc46565a6a0"
   integrity sha512-muRttij7H8TqRNu/DxrAJQITO4Ac7RmX3Klyr/9mJEOBeIpgnF8f9jAfRz5d3XwQZl5qBjF9gLsUtMPJE0vezQ==
 
-pg-sql2@4.11.0:
-  version "4.11.0"
-  resolved "https://registry.yarnpkg.com/pg-sql2/-/pg-sql2-4.11.0.tgz#93c03df9e560ac142f8e15760deb8c5390fc2555"
-  integrity sha512-KUYJ3fNJaN10oSFT6B6MfqN29rZheW33sJ50Gq7wphWhiCUHCxPGxg262TF7ERLYTKkmNXIO0hU7D0ZYhmy7yw==
+pg-sql2@4.12.1:
+  version "4.12.1"
+  resolved "https://registry.yarnpkg.com/pg-sql2/-/pg-sql2-4.12.1.tgz#a67d6fc284ff1f0f6e6bc7bd61b70a5208561bf3"
+  integrity sha512-3N6i0EIBYc3uKpGGJntZA7HG2cyphC2R3d00kOoc0H7MxeAP+5dN1VfHJjj9vFGlrUy40Ttq8z3UkNtWR6ySAA==
   dependencies:
     "@graphile/lru" "4.11.0"
-    "@types/pg" ">=6 <8"
+    "@types/pg" ">=6 <9"
     debug ">=3 <5"
     tslib "^2.0.1"
 
-pg-types@^2.1.0:
+pg-types@^2.1.0, pg-types@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/pg-types/-/pg-types-2.2.0.tgz#2d0250d636454f7cfa3b6ae0382fdfa8063254a3"
   integrity sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==
